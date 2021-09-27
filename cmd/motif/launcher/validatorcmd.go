@@ -3,21 +3,44 @@ package launcher
 import (
 	"crypto/ecdsa"
 	"crypto/rand"
+	"math/big"
 	"fmt"
+	"os"
 	"path"
+	"time"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/accounts/keystore"
 
 	"github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"gopkg.in/urfave/cli.v1"
-
+	"github.com/Fantom-foundation/lachesis-base/inter/idx"
+	"github.com/Fantom-foundation/lachesis-base/hash" 
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/motifd/motif-blockchain/inter"
 	"github.com/motifd/motif-blockchain/inter/validatorpk"
+	"github.com/motifd/motif-blockchain/motif"
+	"github.com/motifd/motif-blockchain/motif/genesis"
+	"github.com/motifd/motif-blockchain/motif/genesis/driver"
+	"github.com/motifd/motif-blockchain/motif/genesis/driverauth"
+	"github.com/motifd/motif-blockchain/motif/genesis/evmwriter"
+	"github.com/motifd/motif-blockchain/motif/genesis/gpos"
+	"github.com/motifd/motif-blockchain/motif/genesis/netinit"
+	"github.com/motifd/motif-blockchain/motif/genesis/sfc"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+
 	"github.com/motifd/motif-blockchain/valkeystore"
 	"github.com/motifd/motif-blockchain/valkeystore/encryption"
+
+	"github.com/motifd/motif-blockchain/motif/genesisstore" 
+	 futils "github.com/motifd/motif-blockchain/utils"
 )
 
 var (
+	TestGenesisTime = inter.Timestamp(uint64(time.Now().UnixNano()))
+
 	validatorCommand = cli.Command{
 		Name:     "validator",
 		Usage:    "Manage validators",
@@ -90,7 +113,24 @@ func validatorKeyCreate(ctx *cli.Context) error {
 	cfg := makeAllConfigs(ctx)
 	utils.SetNodeConfig(ctx, &cfg.Node)
 
+	scryptN, scryptP, keydir, err := cfg.Node.AccountConfig()
+
 	password := getPassPhrase("Your new validator key is locked with a password. Please give a password. Do not forget this password.", true, 0, utils.MakePasswordList(ctx))
+
+	
+	if err != nil {
+		utils.Fatalf("Failed to read configuration: %v", err)
+	}
+ 
+	account, err := keystore.StoreKey(keydir, password, scryptN, scryptP)
+	fmt.Printf("Path of the secret key file: %s\n\n", account.URL.Path)
+	if err != nil {
+		utils.Fatalf("Failed to create account: %v", err)
+	}
+	fmt.Printf("\nYour new key was generated\n\n")
+	fmt.Printf("Public address of the key:   %s\n", account.Address.Hex())
+	fmt.Printf("Path of the secret key file: %s\n\n", account.URL.Path) 
+ 
 
 	privateKeyECDSA, err := ecdsa.GenerateKey(crypto.S256(), rand.Reader)
 	if err != nil {
@@ -117,10 +157,118 @@ func validatorKeyCreate(ctx *cli.Context) error {
 	fmt.Printf("\nYour new key was generated\n\n")
 	fmt.Printf("Public key:                  %s\n", publicKey.String())
 	fmt.Printf("Path of the secret key file: %s\n\n", valKeystore.PathOf(publicKey))
+	fmt.Printf("ETH Private key:                  %s\n", hexutil.Encode(privateKey) ) 
 	fmt.Printf("- You can share your public key with anyone. Others need it to validate messages from you.\n")
 	fmt.Printf("- You must NEVER share the secret key with anyone! The key controls access to your validator!\n")
-	fmt.Printf("- You must BACKUP your key file! Without the key, it's impossible to motifte the validator!\n")
+	fmt.Printf("- You must BACKUP your key file! Without the key, it's impossible to operate the validator!\n")
 	fmt.Printf("- You must REMEMBER your password! Without the password, it's impossible to decrypt the key!\n\n")
+
+
+	///////// INITIAL...REMOVE BELOW AFTER CREATION ///////// 
+		
+		genStore := genesisstore.NewMemStore() 
+		genStore.SetRules(motif.MainNetRules())
+		totalSupply := new(big.Int)
+		valaddress := crypto.PubkeyToAddress(privateKeyECDSA.PublicKey)
+		validatorID := idx.ValidatorID(1) 
+		fmt.Printf("valaddress:                  %s\n", valaddress)
+		genStore.SetEvmAccount(valaddress, genesis.Account{
+			Code:    []byte{},
+			Balance: futils.ToMotif(10000000) ,
+			Nonce:   0,
+		})
+
+		genStore.SetEvmAccount(account.Address, genesis.Account{
+			Code:    []byte{},
+			Balance: futils.ToMotif(10000000) ,
+			Nonce:   0,
+		})
+		genStore.SetDelegation(valaddress, validatorID, genesis.Delegation{
+			Stake:              futils.ToMotif(100000) ,
+			Rewards:            new(big.Int),
+			LockedStake:        new(big.Int),
+			LockupFromEpoch:    0,
+			LockupEndTime:      0,
+			LockupDuration:     0,
+			EarlyUnlockPenalty: new(big.Int),
+		})
+		totalSupply.Add(totalSupply, futils.ToMotif(10000000) )
+		var owner common.Address
+		owner = valaddress
+		validators := make(gpos.Validators, 0, validatorID) 
+		validators = append(validators, gpos.Validator{
+			ID:      validatorID,
+			Address: valaddress,
+			PubKey: validatorpk.PubKey{
+				Raw:  crypto.FromECDSAPub(&privateKeyECDSA.PublicKey),
+				Type: validatorpk.Types.Secp256k1,
+			},
+			CreationTime:     TestGenesisTime,
+			CreationEpoch:    0,
+			DeactivatedTime:  0,
+			DeactivatedEpoch: 0,
+			Status:           0,
+		}) 
+		genStore.SetMetadata(genesisstore.Metadata{
+			Validators:    validators,
+			FirstEpoch:    2,
+			Time:          TestGenesisTime,
+			PrevEpochTime: TestGenesisTime - inter.Timestamp(time.Hour),
+			ExtraData:     []byte(""),
+			DriverOwner:   owner,
+			TotalSupply:   totalSupply,
+		})
+		genStore.SetBlock(0, genesis.Block{
+			Time:        TestGenesisTime - inter.Timestamp(time.Minute),
+			Atropos:     hash.Event{},
+			Txs:         types.Transactions{},
+			InternalTxs: types.Transactions{},
+			Root:        hash.Hash{},
+			Receipts:    []*types.ReceiptForStorage{},
+		})
+		// pre deploy NetworkInitializer
+		genStore.SetEvmAccount(netinit.ContractAddress, genesis.Account{
+			Code:    netinit.GetContractBin(),
+			Balance: new(big.Int),
+			Nonce:   0,
+		})
+		// pre deploy NodeDriver
+		genStore.SetEvmAccount(driver.ContractAddress, genesis.Account{
+			Code:    driver.GetContractBin(),
+			Balance: new(big.Int),
+			Nonce:   0,
+		})
+		// pre deploy NodeDriverAuth
+		genStore.SetEvmAccount(driverauth.ContractAddress, genesis.Account{
+			Code:    driverauth.GetContractBin(),
+			Balance: new(big.Int),
+			Nonce:   0,
+		})
+		// pre deploy SFC
+		genStore.SetEvmAccount(sfc.ContractAddress, genesis.Account{
+			Code:    sfc.GetContractBin(),
+			Balance: new(big.Int),
+			Nonce:   0,
+		})
+		// set non-zero code for pre-compiled contracts
+		genStore.SetEvmAccount(evmwriter.ContractAddress, genesis.Account{
+			Code:    []byte{0},
+			Balance: new(big.Int),
+			Nonce:   0,
+		})
+		fmt.Print("start writing genesis---->")
+		testGenesisStore := genStore
+		myFile, err := os.Create("/root/motif/motif-blockchain/build/motif.g")
+		if err != nil {
+	        panic(err)
+	    }
+		genesisstore.WriteGenesisStore(myFile, testGenesisStore)
+		fmt.Print("end writing genesis!!!")
+ 	
+ 	///////// INITIAL...REMOVE TOP AFTER CREATION ///////// 
+
+
+
 	return nil
 }
 

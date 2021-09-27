@@ -165,7 +165,7 @@ func getMotifGenesis(ctx *cli.Context) integration.InputGenesis {
 		if err != nil {
 			log.Crit("Invalid flag", "flag", FakeNetFlag.Name, "err", err)
 		}
-		fakeGenesisStore := makegenesis.FakeGenesisStore(num, futils.ToFtm(1000000000), futils.ToFtm(5000000))
+		fakeGenesisStore := makegenesis.FakeGenesisStore(num, futils.ToMotif(1000000000), futils.ToMotif(5000000))
 		genesis = integration.InputGenesis{
 			Hash: fakeGenesisStore.Hash(),
 			Read: func(store *genesisstore.Store) error {
