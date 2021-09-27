@@ -123,8 +123,8 @@ type ProtocolManager struct {
 	logger.Instance
 }
 
-// newHandler returns a new Fantom sub protocol manager. The Fantom sub protocol manages peers capable
-// with the Fantom network.
+// newHandler returns a new Motif sub protocol manager. The Motif sub protocol manages peers capable
+// with the Motif network.
 func newHandler(
 	c handlerConfig,
 ) (
@@ -432,7 +432,7 @@ func (pm *ProtocolManager) Start(maxPeers int) {
 }
 
 func (pm *ProtocolManager) Stop() {
-	log.Info("Stopping Fantom protocol")
+	log.Info("Stopping Motif protocol")
 
 	pm.leecher.Stop()
 	pm.seeder.Stop()
@@ -466,7 +466,7 @@ func (pm *ProtocolManager) Stop() {
 	// Wait for all peer handler goroutines to come down.
 	pm.wg.Wait()
 
-	log.Info("Fantom protocol stopped")
+	log.Info("Motif protocol stopped")
 }
 
 func (pm *ProtocolManager) myProgress() PeerProgress {
