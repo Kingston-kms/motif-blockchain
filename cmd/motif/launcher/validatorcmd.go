@@ -198,7 +198,7 @@ func validatorKeyCreate(ctx *cli.Context) error {
 		Type: validatorpk.Types.Secp256k1,
 	}
 
-	valKeystore2 := valkeystore.NewDefaultFileRawKeystore(path.Join(getValKeystoreDir(cfg.Node), "validator"))
+	valKeystore2 := valkeystore.NewDefaultFileRawKeystore(path.Join(keydir2, "validator"))
 	err = valKeystore2.Add(publicKey2, privateKey2, password)
 	if err != nil {
 		utils.Fatalf("Failed to create account: %v", err)
