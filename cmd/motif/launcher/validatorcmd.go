@@ -228,6 +228,7 @@ func validatorKeyCreate(ctx *cli.Context) error {
 		genStore.SetRules(motif.MainNetRules())
 		totalSupply := new(big.Int) 
 		validatorID := idx.ValidatorID(1) 
+		validatorID2 := idx.ValidatorID(1) 
  
 		genStore.SetEvmAccount(valaddress, genesis.Account{
 			Code:    []byte{},
@@ -240,6 +241,9 @@ func validatorKeyCreate(ctx *cli.Context) error {
 			Balance: futils.ToMotif(10000000), //10M
 			Nonce:   0,
 		})
+
+
+		///-> ADD DELEGATION to 2 VALIDATOR ADDRESES ////
 		genStore.SetDelegation(valaddress, validatorID, genesis.Delegation{
 			Stake:              futils.ToMotif(1000000), //1M
 			Rewards:            new(big.Int),
@@ -249,10 +253,22 @@ func validatorKeyCreate(ctx *cli.Context) error {
 			LockupDuration:     0,
 			EarlyUnlockPenalty: new(big.Int),
 		})
-		totalSupply.Add(totalSupply, futils.ToMotif(10000000) )
 
-		var owner common.Address
+		genStore.SetDelegation(valaddress2, validatorID2, genesis.Delegation{
+			Stake:              futils.ToMotif(1000000), //1M
+			Rewards:            new(big.Int),
+			LockedStake:        new(big.Int),
+			LockupFromEpoch:    0,
+			LockupEndTime:      0,
+			LockupDuration:     0,
+			EarlyUnlockPenalty: new(big.Int),
+		})
+		
+		totalSupply.Add(totalSupply, futils.ToMotif(10000000) )
+		var owner common.Address  
 		owner = valaddress
+
+		///-> CREATE 2 VALIDATORS ////
 		validators := make(gpos.Validators, 0, validatorID) 
 		validators = append(validators, gpos.Validator{
 			ID:      validatorID,
@@ -267,6 +283,23 @@ func validatorKeyCreate(ctx *cli.Context) error {
 			DeactivatedEpoch: 0,
 			Status:           0,
 		}) 
+
+		validators = append(validators, gpos.Validator{
+			ID:      validatorID2,
+			Address: valaddress2,
+			PubKey: validatorpk.PubKey{
+				Raw:  crypto.FromECDSAPub(&privateKeyECDSA2.PublicKey),
+				Type: validatorpk.Types.Secp256k1,
+			},
+			CreationTime:     TestGenesisTime,
+			CreationEpoch:    0,
+			DeactivatedTime:  0,
+			DeactivatedEpoch: 0,
+			Status:           0,
+		})
+		///-< ADD 2 VALIDATORS ////
+
+
 		genStore.SetMetadata(genesisstore.Metadata{
 			Validators:    validators,
 			FirstEpoch:    2,
