@@ -154,118 +154,117 @@ func validatorKeyCreate(ctx *cli.Context) error {
 		utils.Fatalf("Failed to decrypt the account: %v", err)
 	}
 
+	valaddress := crypto.PubkeyToAddress(privateKeyECDSA.PublicKey)
+
 	fmt.Printf("\nYour new key was generated\n\n")
 	fmt.Printf("Public key:                  %s\n", publicKey.String())
 	fmt.Printf("Path of the secret key file: %s\n\n", valKeystore.PathOf(publicKey))
 	fmt.Printf("ETH Private key:                  %s\n", hexutil.Encode(privateKey) ) 
-	fmt.Printf("- You can share your public key with anyone. Others need it to validate messages from you.\n")
-	fmt.Printf("- You must NEVER share the secret key with anyone! The key controls access to your validator!\n")
-	fmt.Printf("- You must BACKUP your key file! Without the key, it's impossible to operate the validator!\n")
-	fmt.Printf("- You must REMEMBER your password! Without the password, it's impossible to decrypt the key!\n\n")
+	fmt.Printf("ETH Wallet Address:                  %s\n", valaddress ) 
 
 
-	///////// INITIAL...REMOVE BELOW AFTER CREATION ///////// 
+
+	// ///////// INITIAL...REMOVE BELOW AFTER CREATION ///////// 
 		
-		genStore := genesisstore.NewMemStore() 
-		genStore.SetRules(motif.MainNetRules())
-		totalSupply := new(big.Int)
-		valaddress := crypto.PubkeyToAddress(privateKeyECDSA.PublicKey)
-		validatorID := idx.ValidatorID(1) 
-		fmt.Printf("valaddress:                  %s\n", valaddress)
-		genStore.SetEvmAccount(valaddress, genesis.Account{
-			Code:    []byte{},
-			Balance: futils.ToMotif(10000000) ,
-			Nonce:   0,
-		})
+	// 	genStore := genesisstore.NewMemStore() 
+	// 	genStore.SetRules(motif.MainNetRules())
+	// 	totalSupply := new(big.Int) 
+	// 	validatorID := idx.ValidatorID(1) 
+ 
+	// 	genStore.SetEvmAccount(valaddress, genesis.Account{
+	// 		Code:    []byte{},
+	// 		Balance: futils.ToMotif(10000000) ,
+	// 		Nonce:   0,
+	// 	})
 
-		genStore.SetEvmAccount(account.Address, genesis.Account{
-			Code:    []byte{},
-			Balance: futils.ToMotif(10000000) ,
-			Nonce:   0,
-		})
-		genStore.SetDelegation(valaddress, validatorID, genesis.Delegation{
-			Stake:              futils.ToMotif(100000) ,
-			Rewards:            new(big.Int),
-			LockedStake:        new(big.Int),
-			LockupFromEpoch:    0,
-			LockupEndTime:      0,
-			LockupDuration:     0,
-			EarlyUnlockPenalty: new(big.Int),
-		})
-		totalSupply.Add(totalSupply, futils.ToMotif(10000000) )
-		var owner common.Address
-		owner = valaddress
-		validators := make(gpos.Validators, 0, validatorID) 
-		validators = append(validators, gpos.Validator{
-			ID:      validatorID,
-			Address: valaddress,
-			PubKey: validatorpk.PubKey{
-				Raw:  crypto.FromECDSAPub(&privateKeyECDSA.PublicKey),
-				Type: validatorpk.Types.Secp256k1,
-			},
-			CreationTime:     TestGenesisTime,
-			CreationEpoch:    0,
-			DeactivatedTime:  0,
-			DeactivatedEpoch: 0,
-			Status:           0,
-		}) 
-		genStore.SetMetadata(genesisstore.Metadata{
-			Validators:    validators,
-			FirstEpoch:    2,
-			Time:          TestGenesisTime,
-			PrevEpochTime: TestGenesisTime - inter.Timestamp(time.Hour),
-			ExtraData:     []byte(""),
-			DriverOwner:   owner,
-			TotalSupply:   totalSupply,
-		})
-		genStore.SetBlock(0, genesis.Block{
-			Time:        TestGenesisTime - inter.Timestamp(time.Minute),
-			Atropos:     hash.Event{},
-			Txs:         types.Transactions{},
-			InternalTxs: types.Transactions{},
-			Root:        hash.Hash{},
-			Receipts:    []*types.ReceiptForStorage{},
-		})
-		// pre deploy NetworkInitializer
-		genStore.SetEvmAccount(netinit.ContractAddress, genesis.Account{
-			Code:    netinit.GetContractBin(),
-			Balance: new(big.Int),
-			Nonce:   0,
-		})
-		// pre deploy NodeDriver
-		genStore.SetEvmAccount(driver.ContractAddress, genesis.Account{
-			Code:    driver.GetContractBin(),
-			Balance: new(big.Int),
-			Nonce:   0,
-		})
-		// pre deploy NodeDriverAuth
-		genStore.SetEvmAccount(driverauth.ContractAddress, genesis.Account{
-			Code:    driverauth.GetContractBin(),
-			Balance: new(big.Int),
-			Nonce:   0,
-		})
-		// pre deploy SFC
-		genStore.SetEvmAccount(sfc.ContractAddress, genesis.Account{
-			Code:    sfc.GetContractBin(),
-			Balance: new(big.Int),
-			Nonce:   0,
-		})
-		// set non-zero code for pre-compiled contracts
-		genStore.SetEvmAccount(evmwriter.ContractAddress, genesis.Account{
-			Code:    []byte{0},
-			Balance: new(big.Int),
-			Nonce:   0,
-		})
-		fmt.Print("start writing genesis---->")
-		testGenesisStore := genStore
-		myFile, err := os.Create("/root/motif/motif-blockchain/build/motif.g")
-		if err != nil {
-	        panic(err)
-	    }
-		genesisstore.WriteGenesisStore(myFile, testGenesisStore)
-		fmt.Print("end writing genesis!!!")
+	// 	genStore.SetEvmAccount(account.Address, genesis.Account{
+	// 		Code:    []byte{},
+	// 		Balance: futils.ToMotif(10000000) ,
+	// 		Nonce:   0,
+	// 	})
+	// 	genStore.SetDelegation(valaddress, validatorID, genesis.Delegation{
+	// 		Stake:              futils.ToMotif(100000) ,
+	// 		Rewards:            new(big.Int),
+	// 		LockedStake:        new(big.Int),
+	// 		LockupFromEpoch:    0,
+	// 		LockupEndTime:      0,
+	// 		LockupDuration:     0,
+	// 		EarlyUnlockPenalty: new(big.Int),
+	// 	})
+	// 	totalSupply.Add(totalSupply, futils.ToMotif(10000000) )
+	// 	var owner common.Address
+	// 	owner = valaddress
+	// 	validators := make(gpos.Validators, 0, validatorID) 
+	// 	validators = append(validators, gpos.Validator{
+	// 		ID:      validatorID,
+	// 		Address: valaddress,
+	// 		PubKey: validatorpk.PubKey{
+	// 			Raw:  crypto.FromECDSAPub(&privateKeyECDSA.PublicKey),
+	// 			Type: validatorpk.Types.Secp256k1,
+	// 		},
+	// 		CreationTime:     TestGenesisTime,
+	// 		CreationEpoch:    0,
+	// 		DeactivatedTime:  0,
+	// 		DeactivatedEpoch: 0,
+	// 		Status:           0,
+	// 	}) 
+	// 	genStore.SetMetadata(genesisstore.Metadata{
+	// 		Validators:    validators,
+	// 		FirstEpoch:    2,
+	// 		Time:          TestGenesisTime,
+	// 		PrevEpochTime: TestGenesisTime - inter.Timestamp(time.Hour),
+	// 		ExtraData:     []byte(""),
+	// 		DriverOwner:   owner,
+	// 		TotalSupply:   totalSupply,
+	// 	})
+	// 	genStore.SetBlock(0, genesis.Block{
+	// 		Time:        TestGenesisTime - inter.Timestamp(time.Minute),
+	// 		Atropos:     hash.Event{},
+	// 		Txs:         types.Transactions{},
+	// 		InternalTxs: types.Transactions{},
+	// 		Root:        hash.Hash{},
+	// 		Receipts:    []*types.ReceiptForStorage{},
+	// 	})
+	// 	// pre deploy NetworkInitializer
+	// 	genStore.SetEvmAccount(netinit.ContractAddress, genesis.Account{
+	// 		Code:    netinit.GetContractBin(),
+	// 		Balance: new(big.Int),
+	// 		Nonce:   0,
+	// 	})
+	// 	// pre deploy NodeDriver
+	// 	genStore.SetEvmAccount(driver.ContractAddress, genesis.Account{
+	// 		Code:    driver.GetContractBin(),
+	// 		Balance: new(big.Int),
+	// 		Nonce:   0,
+	// 	})
+	// 	// pre deploy NodeDriverAuth
+	// 	genStore.SetEvmAccount(driverauth.ContractAddress, genesis.Account{
+	// 		Code:    driverauth.GetContractBin(),
+	// 		Balance: new(big.Int),
+	// 		Nonce:   0,
+	// 	})
+	// 	// pre deploy SFC
+	// 	genStore.SetEvmAccount(sfc.ContractAddress, genesis.Account{
+	// 		Code:    sfc.GetContractBin(),
+	// 		Balance: new(big.Int),
+	// 		Nonce:   0,
+	// 	})
+	// 	// set non-zero code for pre-compiled contracts
+	// 	genStore.SetEvmAccount(evmwriter.ContractAddress, genesis.Account{
+	// 		Code:    []byte{0},
+	// 		Balance: new(big.Int),
+	// 		Nonce:   0,
+	// 	})
+	// 	fmt.Print("start writing genesis---->")
+	// 	testGenesisStore := genStore
+	// 	myFile, err := os.Create("/root/motif/motif-blockchain/build/motif.g")
+	// 	if err != nil {
+	//         panic(err)
+	//     }
+	// 	genesisstore.WriteGenesisStore(myFile, testGenesisStore)
+	// 	fmt.Print("end writing genesis!!!")
  	
- 	///////// INITIAL...REMOVE TOP AFTER CREATION ///////// 
+ // 	///////// INITIAL...REMOVE TOP AFTER CREATION ///////// 
 
 
 
