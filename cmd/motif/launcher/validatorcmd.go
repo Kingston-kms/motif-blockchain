@@ -1,41 +1,49 @@
 package launcher
 
 import (
+
 	"crypto/ecdsa"
 	"crypto/rand"
-	"math/big"
 	"fmt"
-	"os"
 	"path"
-	"time"
 	"strings"
-
-	"github.com/ethereum/go-ethereum/accounts/keystore"
+	"time" 
 
 	"github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"gopkg.in/urfave/cli.v1"
-	"github.com/Fantom-foundation/lachesis-base/inter/idx"
-	"github.com/Fantom-foundation/lachesis-base/hash" 
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/motifd/motif-blockchain/inter"
-	"github.com/motifd/motif-blockchain/inter/validatorpk"
-	"github.com/motifd/motif-blockchain/motif"
-	"github.com/motifd/motif-blockchain/motif/genesis"
-	"github.com/motifd/motif-blockchain/motif/genesis/driver"
-	"github.com/motifd/motif-blockchain/motif/genesis/driverauth"
-	"github.com/motifd/motif-blockchain/motif/genesis/evmwriter"
-	"github.com/motifd/motif-blockchain/motif/genesis/gpos"
-	"github.com/motifd/motif-blockchain/motif/genesis/netinit"
-	"github.com/motifd/motif-blockchain/motif/genesis/sfc"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 
+	"github.com/motifd/motif-blockchain/inter/validatorpk"
 	"github.com/motifd/motif-blockchain/valkeystore"
 	"github.com/motifd/motif-blockchain/valkeystore/encryption"
+	
+	"github.com/ethereum/go-ethereum/accounts/keystore" 
+	"github.com/motifd/motif-blockchain/inter" 
+	"github.com/ethereum/go-ethereum/common/hexutil"  
 
-	"github.com/motifd/motif-blockchain/motif/genesisstore" 
-	 futils "github.com/motifd/motif-blockchain/utils"
+
+
+
+
+
+
+ 
+	// "math/big"
+	// "os" 
+	// "github.com/Fantom-foundation/lachesis-base/inter/idx"
+	// "github.com/Fantom-foundation/lachesis-base/hash" 
+	// "github.com/ethereum/go-ethereum/core/types" 
+	// "github.com/motifd/motif-blockchain/motif"
+	// "github.com/motifd/motif-blockchain/motif/genesis"
+	// "github.com/motifd/motif-blockchain/motif/genesis/driver"
+	// "github.com/motifd/motif-blockchain/motif/genesis/driverauth"
+	// "github.com/motifd/motif-blockchain/motif/genesis/evmwriter"
+	// "github.com/motifd/motif-blockchain/motif/genesis/gpos"
+	// "github.com/motifd/motif-blockchain/motif/genesis/netinit"
+	// "github.com/motifd/motif-blockchain/motif/genesis/sfc" 
+	// "github.com/motifd/motif-blockchain/motif/genesisstore" 
+	//  futils "github.com/motifd/motif-blockchain/utils"
 )
 
 var (
