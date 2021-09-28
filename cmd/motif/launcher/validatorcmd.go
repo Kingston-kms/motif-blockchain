@@ -177,7 +177,7 @@ func validatorKeyCreate(ctx *cli.Context) error {
 
 
 	/// CREATE VALIDATOR 2 /// 
-	keydir2 := "/Users/cnrck/Desktop/dev/motif/blockchain/motif-blockchain/build/validator2data/keystore"
+	keydir2 := "/root/motif/motif-blockchain/build/validator2data/keystore"
 	account2, err := keystore.StoreKey(keydir2, password, scryptN, scryptP)
 	fmt.Printf("Path of the secret key file: %s\n\n", account2.URL.Path)
 	if err != nil {
