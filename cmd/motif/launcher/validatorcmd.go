@@ -228,7 +228,7 @@ func validatorKeyCreate(ctx *cli.Context) error {
 		genStore.SetRules(motif.MainNetRules())
 		totalSupply := new(big.Int) 
 		validatorID := idx.ValidatorID(1) 
-		validatorID2 := idx.ValidatorID(1) 
+		validatorID2 := idx.ValidatorID(2) 
  
 		genStore.SetEvmAccount(valaddress, genesis.Account{
 			Code:    []byte{},
@@ -270,6 +270,7 @@ func validatorKeyCreate(ctx *cli.Context) error {
 
 		///-> CREATE 2 VALIDATORS ////
 		validators := make(gpos.Validators, 0, validatorID) 
+		
 		validators = append(validators, gpos.Validator{
 			ID:      validatorID,
 			Address: valaddress,
