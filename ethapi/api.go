@@ -1822,10 +1822,7 @@ func SubmitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (c
 		return common.Hash{}, err
 	}
 
-	log.Info("SubmitTransaction LOG!!!!!!!!!!!!!", tx)
-	log.Info("SubmitTransaction LOG!!!!!!!!!!!!!", tx)
-	log.Info("SubmitTransaction LOG!!!!!!!!!!!!!", tx)
-	log.Info("SubmitTransaction LOG!!!!!!!!!!!!!", tx)
+	fmt.Printf("transaction!!!!!!!!", tx)
 
 	if tx.To() == nil {
 		addr := crypto.CreateAddress(from, tx.Nonce())
