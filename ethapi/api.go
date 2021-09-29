@@ -1822,13 +1822,18 @@ func SubmitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (c
 		return common.Hash{}, err
 	}
 
-	fmt.Printf("transaction!!!!!!!!", tx)
+	fmt.Printf("transaction to!!!!!!!!", tx.To())
+	fmt.Printf("transaction hash !!!!!!!!", tx.Hash())
+	fmt.Printf("transaction hash !!!!!!!!", tx.Hash().Hex())
+
+
+	
 
 	if tx.To() == nil {
 		addr := crypto.CreateAddress(from, tx.Nonce())
 		log.Info("Submitted contract creation", "hash", tx.Hash().Hex(), "from", from, "nonce", tx.Nonce(), "contract", addr.Hex(), "value", tx.Value())
 	} else {
-		log.Info("Submitted transaction", "hash", tx.Hash().Hex(), "from", from, "nonce", tx.Nonce(), "recipient", tx.To(), "value", tx.Value())
+		log.Info("Submitted transaction", "hash", tx.Hash().Hex(), "from", from, "nonce", tx.Nonce(), "recipient", nil, "value", tx.Value())
 	}
 	return tx.Hash(), nil
 }
