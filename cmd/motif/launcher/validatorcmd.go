@@ -361,13 +361,14 @@ func validatorKeyCreate(ctx *cli.Context) error {
 			Nonce:   0,
 		})
 
-		fmt.Println("evmwriter.ContractAddress ",evmwriter.ContractAddress)
+		fmt.Println("evmwriter.ContractAddress ", evmwriter.ContractAddress)
 		// set non-zero code for pre-compiled contracts
 		genStore.SetEvmAccount(evmwriter.ContractAddress, genesis.Account{
 			Code:    []byte{0},
 			Balance: new(big.Int),
 			Nonce:   0,
 		})
+		
 		fmt.Print("start writing genesis---->")
 		testGenesisStore := genStore
 		myFile, err := os.Create("/root/motif/motif-blockchain/build/motif.g")
