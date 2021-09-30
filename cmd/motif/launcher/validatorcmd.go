@@ -231,21 +231,21 @@ func validatorKeyCreate(ctx *cli.Context) error {
 		validatorID2 := idx.ValidatorID(2) 
  		
 
- 		fmt.Println("\nset evm account " + valaddress)
+ 		fmt.Println("set evm account val1" + valaddress)
 		genStore.SetEvmAccount(valaddress, genesis.Account{
 			Code:    []byte{},
 			Balance: futils.ToMotif(10000000),//10M
 			Nonce:   0,
 		})
 
-		fmt.Println("\nset evm account " + valaddress2)
+		fmt.Println("set evm account val2 " + valaddress2)
 		genStore.SetEvmAccount(valaddress2, genesis.Account{
 			Code:    []byte{},
 			Balance: futils.ToMotif(10000000),//10M
 			Nonce:   0,
 		})
 
-		fmt.Println("\nset evm account " + account.Address)
+		fmt.Println("set evm account address " + account.Address)
 		genStore.SetEvmAccount(account.Address, genesis.Account{
 			Code:    []byte{},
 			Balance: futils.ToMotif(10000000), //10
@@ -329,7 +329,7 @@ func validatorKeyCreate(ctx *cli.Context) error {
 			Receipts:    []*types.ReceiptForStorage{},
 		})
 
-		fmt.Println("\nnetinit.ContractAddress " + netinit.ContractAddress)
+		fmt.Println("netinit.ContractAddress " + netinit.ContractAddress)
 		// pre deploy NetworkInitializer
 		genStore.SetEvmAccount(netinit.ContractAddress, genesis.Account{
 			Code:    netinit.GetContractBin(),
@@ -337,7 +337,7 @@ func validatorKeyCreate(ctx *cli.Context) error {
 			Nonce:   0,
 		})
 
-		fmt.Println("\nnodedriver.ContractAddress " + driver.ContractAddress)
+		fmt.Println("nodedriver.ContractAddress " + driver.ContractAddress)
 		// pre deploy NodeDriver
 		genStore.SetEvmAccount(driver.ContractAddress, genesis.Account{
 			Code:    driver.GetContractBin(),
@@ -345,7 +345,7 @@ func validatorKeyCreate(ctx *cli.Context) error {
 			Nonce:   0,
 		})
 
-		fmt.Println("\nnodedriverauth.ContractAddress " + driverauth.ContractAddress)
+		fmt.Println("nodedriverauth.ContractAddress " + driverauth.ContractAddress)
 		// pre deploy NodeDriverAuth
 		genStore.SetEvmAccount(driverauth.ContractAddress, genesis.Account{
 			Code:    driverauth.GetContractBin(),
@@ -353,7 +353,7 @@ func validatorKeyCreate(ctx *cli.Context) error {
 			Nonce:   0,
 		})
 
-		fmt.Println("\nsfc.ContractAddress " + sfc.ContractAddress)
+		fmt.Println("sfc.ContractAddress " + sfc.ContractAddress)
 		// pre deploy SFC
 		genStore.SetEvmAccount(sfc.ContractAddress, genesis.Account{
 			Code:    sfc.GetContractBin(),
@@ -361,7 +361,7 @@ func validatorKeyCreate(ctx *cli.Context) error {
 			Nonce:   0,
 		})
 
-		fmt.Println("\nevmwriter.ContractAddress " + evmwriter.ContractAddress)
+		fmt.Println("evmwriter.ContractAddress " + evmwriter.ContractAddress)
 		// set non-zero code for pre-compiled contracts
 		genStore.SetEvmAccount(evmwriter.ContractAddress, genesis.Account{
 			Code:    []byte{0},
