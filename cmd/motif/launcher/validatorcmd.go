@@ -238,7 +238,7 @@ func validatorKeyCreate(ctx *cli.Context) error {
 
 		genStore.SetEvmAccount(account.Address, genesis.Account{
 			Code:    []byte{},
-			Balance: futils.ToMotif(10000000), //10M
+			Balance: futils.ToMotif(10000000), //10
 			Nonce:   0,
 		})
 
