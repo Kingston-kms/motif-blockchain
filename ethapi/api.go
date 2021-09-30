@@ -1899,7 +1899,7 @@ func (s *PublicTransactionPoolAPI) SendRawTransaction(ctx context.Context, encod
 	if err := rlp.DecodeBytes(encodedTx, tx); err != nil {
 		return common.Hash{}, err
 	}
-	fmt.Printf("SEND TRANSACTION 3 !!!!!!!!",args) 
+	fmt.Printf("SEND TRANSACTION 3 !!!!!!!!",encodedTx) 
 	return SubmitTransaction(ctx, s.b, tx)
 }
 
