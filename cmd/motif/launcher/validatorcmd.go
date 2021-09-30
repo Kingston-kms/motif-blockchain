@@ -26,7 +26,7 @@ import (
 
 
 
-
+ 
 
  
 	"math/big"
@@ -229,13 +229,23 @@ func validatorKeyCreate(ctx *cli.Context) error {
 		totalSupply := new(big.Int) 
 		validatorID := idx.ValidatorID(1) 
 		validatorID2 := idx.ValidatorID(2) 
- 
+ 		
+
+ 		fmt.Println("\nset evm account " + valaddress)
 		genStore.SetEvmAccount(valaddress, genesis.Account{
 			Code:    []byte{},
 			Balance: futils.ToMotif(10000000),//10M
 			Nonce:   0,
 		})
 
+		fmt.Println("\nset evm account " + valaddress2)
+		genStore.SetEvmAccount(valaddress2, genesis.Account{
+			Code:    []byte{},
+			Balance: futils.ToMotif(10000000),//10M
+			Nonce:   0,
+		})
+
+		fmt.Println("\nset evm account " + account.Address)
 		genStore.SetEvmAccount(account.Address, genesis.Account{
 			Code:    []byte{},
 			Balance: futils.ToMotif(10000000), //10
@@ -318,30 +328,40 @@ func validatorKeyCreate(ctx *cli.Context) error {
 			Root:        hash.Hash{},
 			Receipts:    []*types.ReceiptForStorage{},
 		})
+
+		fmt.Println("\nnetinit.ContractAddress " + netinit.ContractAddress)
 		// pre deploy NetworkInitializer
 		genStore.SetEvmAccount(netinit.ContractAddress, genesis.Account{
 			Code:    netinit.GetContractBin(),
 			Balance: new(big.Int),
 			Nonce:   0,
 		})
+
+		fmt.Println("\nnodedriver.ContractAddress " + driver.ContractAddress)
 		// pre deploy NodeDriver
 		genStore.SetEvmAccount(driver.ContractAddress, genesis.Account{
 			Code:    driver.GetContractBin(),
 			Balance: new(big.Int),
 			Nonce:   0,
 		})
+
+		fmt.Println("\nnodedriverauth.ContractAddress " + driverauth.ContractAddress)
 		// pre deploy NodeDriverAuth
 		genStore.SetEvmAccount(driverauth.ContractAddress, genesis.Account{
 			Code:    driverauth.GetContractBin(),
 			Balance: new(big.Int),
 			Nonce:   0,
 		})
+
+		fmt.Println("\nsfc.ContractAddress " + sfc.ContractAddress)
 		// pre deploy SFC
 		genStore.SetEvmAccount(sfc.ContractAddress, genesis.Account{
 			Code:    sfc.GetContractBin(),
 			Balance: new(big.Int),
 			Nonce:   0,
 		})
+
+		fmt.Println("\nevmwriter.ContractAddress " + evmwriter.ContractAddress)
 		// set non-zero code for pre-compiled contracts
 		genStore.SetEvmAccount(evmwriter.ContractAddress, genesis.Account{
 			Code:    []byte{0},
