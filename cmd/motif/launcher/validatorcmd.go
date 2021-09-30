@@ -232,15 +232,15 @@ func validatorKeyCreate(ctx *cli.Context) error {
  
 		genStore.SetEvmAccount(valaddress, genesis.Account{
 			Code:    []byte{},
-			Balance: futils.ToMotif(8000000),//8M
+			Balance: futils.ToMotif(10000000),//10M
 			Nonce:   0,
 		})
 
-		// genStore.SetEvmAccount(account.Address, genesis.Account{
-		// 	Code:    []byte{},
-		// 	Balance: futils.ToMotif(10000000), //10M
-		// 	Nonce:   0,
-		// })
+		genStore.SetEvmAccount(account.Address, genesis.Account{
+			Code:    []byte{},
+			Balance: futils.ToMotif(10000000), //10M
+			Nonce:   0,
+		})
 
 
 		///-> ADD DELEGATION to 2 VALIDATOR ADDRESES ////
