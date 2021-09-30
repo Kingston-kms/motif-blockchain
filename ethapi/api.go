@@ -1826,7 +1826,7 @@ func SubmitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (c
 	fmt.Printf("SUBMIT TRANSACTION 2 !!!!!!!!",ctx) 
 	if err := b.SendTx(ctx, tx); err != nil {
 		return common.Hash{}, err
-	} // Print a log with full tx details for manual investigations and interventions
+	} 
 	signer := types.MakeSigner(b.ChainConfig(), b.CurrentBlock().Number)
 	from, err := types.Sender(signer, tx)
 	if err != nil {

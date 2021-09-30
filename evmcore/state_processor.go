@@ -56,6 +56,7 @@ func (p *StateProcessor) Process(
 ) (
 	receipts types.Receipts, allLogs []*types.Log, skipped []uint32, err error,
 ) {
+
 	skipped = make([]uint32, 0, len(block.Transactions))
 	var (
 		gp           = new(GasPool).AddGas(block.GasLimit)
@@ -65,6 +66,7 @@ func (p *StateProcessor) Process(
 		blockContext = NewEVMBlockContext(header, p.bc, nil)
 		vmenv        = vm.NewEVM(blockContext, vm.TxContext{}, statedb, p.config, cfg)
 	)
+	fmt.Printf("PROCESSING TRANSACTIONS!!!!!!",block.Transactions)  
 	// Iterate over and process the individual transactions
 	for i, tx := range block.Transactions {
 		var msg types.Message
@@ -74,10 +76,13 @@ func (p *StateProcessor) Process(
 				return nil, nil, nil, err
 			}
 		} else {
+			fmt.Printf("==>NEW MESSAGE TO!!!", tx.To()) 
+			fmt.Printf("==>NEW MESSAGE DATA!!!", tx.Data())  
 			msg = types.NewMessage(common.Address{}, tx.To(), tx.Nonce(), tx.Value(), tx.Gas(), tx.GasPrice(), tx.Data(), tx.AccessList(), false)
 		}
 
 		statedb.Prepare(tx.Hash(), block.Hash, i)
+		fmt.Printf("==>apply TRANSACTION!!!", msg)  
 		receipt, _, skip, err = applyTransaction(msg, p.config, gp, statedb, block.Header(), tx, usedGas, vmenv, onNewLog)
 		if skip {
 			skipped = append(skipped, uint32(i))
