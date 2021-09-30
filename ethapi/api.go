@@ -368,6 +368,7 @@ func (s *PrivateAccountAPI) signTransaction(ctx context.Context, args *SendTxArg
 		return nil, err
 	}
 	// Assemble the transaction and sign with the wallet
+	fmt.Printf("SIGN TRANSACTION !!!!!!!!",ctx) 
 	tx := args.toTransaction()
 
 	return wallet.SignTxWithPassphrase(account, passwd, tx, s.b.ChainConfig().ChainID)
@@ -1898,6 +1899,7 @@ func (s *PublicTransactionPoolAPI) SendRawTransaction(ctx context.Context, encod
 	if err := rlp.DecodeBytes(encodedTx, tx); err != nil {
 		return common.Hash{}, err
 	}
+	fmt.Printf("SEND TRANSACTION 3 !!!!!!!!",args) 
 	return SubmitTransaction(ctx, s.b, tx)
 }
 
