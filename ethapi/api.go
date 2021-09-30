@@ -388,6 +388,9 @@ func (s *PrivateAccountAPI) SendTransaction(ctx context.Context, args SendTxArgs
 		log.Warn("Failed transaction send attempt", "from", args.From, "to", args.To, "value", args.Value.ToInt(), "err", err)
 		return common.Hash{}, err
 	}
+	
+	fmt.Printf("SEND TRANSACTION !!!!!!!!",ctx) 
+
 	return SubmitTransaction(ctx, s.b, signed)
 }
 
@@ -1725,7 +1728,8 @@ func (args *SendTxArgs) setDefaults(ctx context.Context, b Backend) error {
 	if args.Data != nil && args.Input != nil && !bytes.Equal(*args.Data, *args.Input) {
 		return errors.New(`both "data" and "input" are set and not equal. Please use "input" to pass transaction call data.`)
 	}
-	if args.To == nil {
+	if args.To == nil { 
+		fmt.Printf("TO !!!!!!!!",args.To) 
 		// Contract creation
 		var input []byte
 		if args.Data != nil {
@@ -1817,6 +1821,7 @@ func SubmitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (c
 		// Ensure only eip155 signed transactions are submitted if EIP155Required is set.
 		return common.Hash{}, errors.New("only replay-protected (EIP-155) transactions allowed over RPC")
 	}
+	fmt.Printf("SUBMIT TRANSACTION !!!!!!!!",tx) 
 	if err := b.SendTx(ctx, tx); err != nil {
 		return common.Hash{}, err
 	} // Print a log with full tx details for manual investigations and interventions
@@ -1928,6 +1933,9 @@ type SignTransactionResult struct {
 // The node needs to have the private key of the account corresponding with
 // the given from address and it needs to be unlocked.
 func (s *PublicTransactionPoolAPI) SignTransaction(ctx context.Context, args SendTxArgs) (*SignTransactionResult, error) {
+
+
+
 	if args.Gas == nil {
 		return nil, fmt.Errorf("gas not specified")
 	}
