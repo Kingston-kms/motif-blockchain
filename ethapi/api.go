@@ -1870,6 +1870,8 @@ func (s *PublicTransactionPoolAPI) SendTransaction(ctx context.Context, args Sen
 	if err != nil {
 		return common.Hash{}, err
 	}
+
+	fmt.Printf("SEND TRANSACTION 2 !!!!!!!!",args) 
 	return SubmitTransaction(ctx, s.b, signed)
 }
 
