@@ -1774,11 +1774,14 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
 	var input []byte
 	if args.Input != nil {
 		input = *args.Input
+		fmt.Printf("XXXXXX !!!!!!!!",input)
 	} else if args.Data != nil {
 		input = *args.Data
+		fmt.Printf("YYYYYY !!!!!!!!",input)
 	}
 	var data types.TxData
 	if args.AccessList == nil {
+		fmt.Printf("AAAAA !!!!!!!!",args.To) 
 		data = &types.LegacyTx{
 			To:       args.To,
 			Nonce:    uint64(*args.Nonce),
@@ -1788,6 +1791,7 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
 			Data:     input,
 		}
 	} else {
+		fmt.Printf("BBBBB !!!!!!!!",args.To) 
 		data = &types.AccessListTx{
 			To:         args.To,
 			ChainID:    (*big.Int)(args.ChainID),
@@ -1820,20 +1824,13 @@ func SubmitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (c
 	from, err := types.Sender(signer, tx)
 	if err != nil {
 		return common.Hash{}, err
-	}
-
-	fmt.Printf("transaction to!!!!!!!!", tx.To())
-	fmt.Printf("transaction hash !!!!!!!!", tx.Hash())
-	fmt.Printf("transaction hash !!!!!!!!", tx.Hash().Hex())
-
-
-	
-
+	} 
+	 
 	if tx.To() == nil {
 		addr := crypto.CreateAddress(from, tx.Nonce())
 		log.Info("Submitted contract creation", "hash", tx.Hash().Hex(), "from", from, "nonce", tx.Nonce(), "contract", addr.Hex(), "value", tx.Value())
 	} else {
-		log.Info("Submitted transaction", "hash", tx.Hash().Hex(), "from", from, "nonce", tx.Nonce(), "recipient", nil, "value", tx.Value())
+		log.Info("Submitted transaction", "hash", tx.Hash().Hex(), "from", from, "nonce", tx.Nonce(), "recipient", tx.To(), "value", tx.Value())
 	}
 	return tx.Hash(), nil
 }
