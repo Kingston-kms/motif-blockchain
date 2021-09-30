@@ -76,8 +76,8 @@ func (p *StateProcessor) Process(
 				return nil, nil, nil, err
 			}
 		} else {
-			fmt.Printf("==>NEW MESSAGE TO!!!", tx.To()) 
-			fmt.Printf("==>NEW MESSAGE DATA!!!", tx.Data())  
+			fmt.Printf("==>NEW MESSAGE INTERNAL TO!!!", tx.To()) 
+			fmt.Printf("==>NEW MESSAGE INTERNAL DATA!!!", tx.Data())  
 			msg = types.NewMessage(common.Address{}, tx.To(), tx.Nonce(), tx.Value(), tx.Gas(), tx.GasPrice(), tx.Data(), tx.AccessList(), false)
 		}
 
