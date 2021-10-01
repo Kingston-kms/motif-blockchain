@@ -92,7 +92,7 @@ func (s *Service) processSavedEvent(e *inter.EventPayload, es *blockproc.EpochSt
 
 // saveAndProcessEvent deletes event in a case if it fails validation during event processing
 func (s *Service) saveAndProcessEvent(e *inter.EventPayload, es *blockproc.EpochState) error {
-	fmt.Printf("saveAndProcessEvent !!!!!!!!",e)
+	fmt.Println("!!!!saveAndProcessEvent start!!!!!!!!",e)
 	fixEventTxHashes(e)
 	// indexing event
 	s.store.SetEvent(e)
@@ -103,9 +103,9 @@ func (s *Service) saveAndProcessEvent(e *inter.EventPayload, es *blockproc.Epoch
 		s.store.DelEvent(e.ID())
 		return err
 	}
-	fmt.Printf("saveAndProcessEvent no errorrs !!!!!!!!",e.ID())
-	fmt.Printf("saveAndProcessEvent epcoh state!!!!!!!!",es)
-	fmt.Printf("saveAndProcessEvent s.store!!!!!!!!",s.store)
+	fmt.Println("!!!!saveAndProcessEvent no errorrs !!!!!!!!",e.ID())
+	fmt.Println("!!!!saveAndProcessEvent epcoh state!!!!!!!!",es)
+	fmt.Println("!!!!saveAndProcessEvent s.store!!!!!!!!",s.store)
 	// save event index after success
 	s.dagIndexer.Flush()
 	return nil
