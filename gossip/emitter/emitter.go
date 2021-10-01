@@ -300,10 +300,10 @@ func (em *Emitter) createEvent(sortedTxs *types.TransactionsByPriceAndNonce) *in
 	)
 
 	// Find parents
-	// selfParent, parents, ok := em.chooseParents(em.epoch, em.config.Validator.ID)
-	// if !ok {
-	// 	return nil
-	// }
+	 selfParent, parents, ok := em.chooseParents(em.epoch, em.config.Validator.ID)
+	if !ok {
+		return nil
+	}
 
 	// Set parent-dependent fields
 	parentHeaders := make(inter.Events, len(parents))
