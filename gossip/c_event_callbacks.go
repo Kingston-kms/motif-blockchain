@@ -4,6 +4,7 @@ import (
 	"errors"
 	"math/big"
 	"sync/atomic"
+	"fmt"
 
 	"github.com/Fantom-foundation/lachesis-base/gossip/dagprocessor"
 	"github.com/Fantom-foundation/lachesis-base/hash"
@@ -74,6 +75,7 @@ func (s *Service) buildEvent(e *inter.MutableEventPayload, onIndexed func()) err
 
 // processSavedEvent performs processing which depends on event being saved in DB
 func (s *Service) processSavedEvent(e *inter.EventPayload, es *blockproc.EpochState) error {
+	fmt.Printf("processSavedEvent !!!!!!!!",e)
 	err := s.dagIndexer.Add(e)
 	if err != nil {
 		return err
@@ -90,6 +92,7 @@ func (s *Service) processSavedEvent(e *inter.EventPayload, es *blockproc.EpochSt
 
 // saveAndProcessEvent deletes event in a case if it fails validation during event processing
 func (s *Service) saveAndProcessEvent(e *inter.EventPayload, es *blockproc.EpochState) error {
+	fmt.Printf("saveAndProcessEvent !!!!!!!!",e)
 	fixEventTxHashes(e)
 	// indexing event
 	s.store.SetEvent(e)
@@ -100,7 +103,9 @@ func (s *Service) saveAndProcessEvent(e *inter.EventPayload, es *blockproc.Epoch
 		s.store.DelEvent(e.ID())
 		return err
 	}
-
+	fmt.Printf("saveAndProcessEvent no errorrs !!!!!!!!",e.ID())
+	fmt.Printf("saveAndProcessEvent epcoh state!!!!!!!!",es)
+	fmt.Printf("saveAndProcessEvent s.store!!!!!!!!",s.store)
 	// save event index after success
 	s.dagIndexer.Flush()
 	return nil
@@ -125,6 +130,7 @@ func processLastEvent(lasts *concurrent.ValidatorEventsSet, e *inter.EventPayloa
 
 // processEvent extends the engine.Process with gossip-specific actions on each event processing
 func (s *Service) processEvent(e *inter.EventPayload) error {
+	fmt.Printf("processEvent !!!!!!!!",e)
 	// s.engineMu is locked here
 	if s.stopped {
 		return errStopped
