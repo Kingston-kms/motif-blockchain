@@ -53,7 +53,7 @@ func (ew *emitterWorld) IsBusy() bool {
 }
 
 func (ew *emitterWorld) IsSynced() bool {
-	return true//!!!!! atomic.LoadUint32(&ew.s.pm.synced) != 0
+	return atomic.LoadUint32(&ew.s.pm.synced) != 0
 }
 
 func (ew *emitterWorld) PeersNum() int {

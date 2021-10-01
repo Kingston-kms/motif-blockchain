@@ -59,10 +59,10 @@ func (em *Emitter) currentSyncStatus() doublesign.SyncStatus {
 }
 
 func (em *Emitter) isSyncedToEmit() (time.Duration, error) {
- // if em.intervals.DoublesignProtection == 0 {
- // 	return 0, nil // protection disabled
-	//  }
-	return 0, nil  ///!!!!!  //doublesign.SyncedToEmit(em.currentSyncStatus(), em.intervals.DoublesignProtection)
+ if em.intervals.DoublesignProtection == 0 {
+ 	return 0, nil // protection disabled
+	 }
+	return  doublesign.SyncedToEmit(em.currentSyncStatus(), em.intervals.DoublesignProtection)
 }
 
 func (em *Emitter) logSyncStatus(wait time.Duration, syncErr error) bool {

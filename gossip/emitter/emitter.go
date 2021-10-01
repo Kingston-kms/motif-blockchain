@@ -287,10 +287,10 @@ func (em *Emitter) createEvent(sortedTxs *types.TransactionsByPriceAndNonce) *in
 		return nil
 	}
 
-	// if synced := em.logSyncStatus(em.isSyncedToEmit()); !synced {
-	// 	// I'm reindexing my old events, so don't create events until connect all the existing self-events
-	// 	return nil
-	// } !!!!!! synced lachesis
+	if synced := em.logSyncStatus(em.isSyncedToEmit()); !synced {
+		// I'm reindexing my old events, so don't create events until connect all the existing self-events
+		return nil
+	}
 
 	var (
 		selfParentSeq  idx.Event
