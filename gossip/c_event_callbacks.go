@@ -74,7 +74,7 @@ func (s *Service) buildEvent(e *inter.MutableEventPayload, onIndexed func()) err
 }
 
 // processSavedEvent performs processing which depends on event being saved in DB
-func (s *Service) processSavedEvent(e *inter.EventPayload, es *blockproc.EpochState) error {
+func (s *Service) processSavedEvent(e *inter.EventPayload, es *blockproc.EpochState) error { 	
 	fmt.Printf("processSavedEvent !!!!!!!!",e)
 	err := s.dagIndexer.Add(e)
 	if err != nil {
