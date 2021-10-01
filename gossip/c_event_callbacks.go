@@ -176,6 +176,9 @@ func (s *Service) processEvent(e *inter.EventPayload) error {
 
 	s.emitter.OnEventConnected(e)
 
+	eventx :=s.store.GetEvent(e.ID())
+	fmt.Printf("Getevent !!!!!!!!", eventx)
+
 	if newEpoch != oldEpoch {
 		// reset dag indexer
 		s.store.resetEpochStore(newEpoch)

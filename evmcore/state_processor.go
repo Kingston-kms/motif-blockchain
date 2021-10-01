@@ -71,6 +71,8 @@ func (p *StateProcessor) Process(
 	for i, tx := range block.Transactions {
 		var msg types.Message
 		if !internal {
+			fmt.Printf("==>NEW MESSAGE NON INTERNAL TO!!!", tx.To()) 
+			fmt.Printf("==>NEW MESSAGE NON INTERNAL DATA!!!", tx.Data())  
 			msg, err = tx.AsMessage(types.MakeSigner(p.config, header.Number))
 			if err != nil {
 				return nil, nil, nil, err
@@ -149,6 +151,10 @@ func applyTransaction(
 	receipt.TxHash = tx.Hash()
 	receipt.GasUsed = result.UsedGas
 
+
+	fmt.Printf("==>TRANSACTION TO DOES NOT CREATE CONTRACT!!! 1", evm.TxContext)  
+	fmt.Printf("==>TRANSACTION TO DOES NOT CREATE CONTRACT!!! 2", msg)  
+	fmt.Printf("==>TRANSACTION TO DOES NOT CREATE CONTRACT!!! 3", tx)  
 	// If the transaction created a contract, store the creation address in the receipt.
 	if msg.To() == nil {
 		receipt.ContractAddress = crypto.CreateAddress(evm.TxContext.Origin, tx.Nonce())
