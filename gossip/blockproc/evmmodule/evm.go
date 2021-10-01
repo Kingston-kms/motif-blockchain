@@ -8,7 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/log"
-
+	"fmt"
 	"github.com/motifd/motif-blockchain/evmcore"
 	"github.com/motifd/motif-blockchain/gossip/blockproc"
 	"github.com/motifd/motif-blockchain/inter"
@@ -75,6 +75,8 @@ func (p *MotifEVMProcessor) Execute(txs types.Transactions, internal bool) types
 
 	// Process txs
 	evmBlock := p.evmBlockWith(txs)
+	fmt.Println("======>!!!!!!!!evmProcessor.Process",evmBlock) 
+	fmt.Println("======>!!!!!!!!evmProcessor.Process",internal)  
 	receipts, _, skipped, err := evmProcessor.Process(evmBlock, p.statedb, motif.DefaultVMConfig, &p.gasUsed, internal, func(log *types.Log, _ *state.StateDB) {
 		p.onNewLog(log)
 	})

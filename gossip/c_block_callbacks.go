@@ -5,7 +5,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-
+	"fmt"
 	"github.com/Fantom-foundation/lachesis-base/hash"
 	"github.com/Fantom-foundation/lachesis-base/inter/dag"
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
@@ -175,6 +175,7 @@ func consensusCallbackBeginBlockFn(
 				blockFn := func() {
 					// Execute post-internal transactions
 					internalTxs := blockProc.PostTxTransactor.PopInternalTxs(blockCtx, bs, es, sealing, statedb)
+					fmt.Println("======>!!!!!!!!CBLOCK CALLBSCKS evmProcessor.Execute 279",internalTxs)  
 					internalReceipts := evmProcessor.Execute(internalTxs, true)
 					for _, r := range internalReceipts {
 						if r.Status == 0 {
@@ -262,6 +263,8 @@ func consensusCallbackBeginBlockFn(
 						}
 					}
 					for _, tx := range append(preInternalTxs, internalTxs...) {
+						fmt.Println("======>!!!!!!!!C_BLOCK_CALLBACK SET_TX 265",tx.Hash()) 
+						fmt.Println("======>!!!!!!!!C_BLOCK_CALLBACK SET_TX 265",tx) 
 						store.evm.SetTx(tx.Hash(), tx)
 					}
 
