@@ -283,14 +283,14 @@ func (em *Emitter) loadPrevEmitTime() time.Time {
 
 // createEvent is not safe for concurrent use.
 func (em *Emitter) createEvent(sortedTxs *types.TransactionsByPriceAndNonce) *inter.EventPayload {
-	if !em.isValidator() {
-		return nil
-	}
+	// if !em.isValidator() {
+	// 	return nil
+	// }!!
 
-	if synced := em.logSyncStatus(em.isSyncedToEmit()); !synced {
-		// I'm reindexing my old events, so don't create events until connect all the existing self-events
-		return nil
-	}
+	// if synced := em.logSyncStatus(em.isSyncedToEmit()); !synced {
+	// 	// I'm reindexing my old events, so don't create events until connect all the existing self-events
+	// 	return nil
+	// }!!
 
 	var (
 		selfParentSeq  idx.Event
@@ -300,10 +300,10 @@ func (em *Emitter) createEvent(sortedTxs *types.TransactionsByPriceAndNonce) *in
 	)
 
 	// Find parents
-	selfParent, parents, ok := em.chooseParents(em.epoch, em.config.Validator.ID)
-	if !ok {
-		return nil
-	}
+	// selfParent, parents, ok := em.chooseParents(em.epoch, em.config.Validator.ID)
+	// if !ok {
+	// 	return nil
+	// }
 
 	// Set parent-dependent fields
 	parentHeaders := make(inter.Events, len(parents))
@@ -358,20 +358,20 @@ func (em *Emitter) createEvent(sortedTxs *types.TransactionsByPriceAndNonce) *in
 
 	// Pre-check if event should be emitted
 	// It is checked in advance to avoid adding transactions just to immediately drop the event later
-	if !em.isAllowedToEmit(mutEvent, true, metric, selfParentHeader) {
-		return nil
-	}
+	// if !em.isAllowedToEmit(mutEvent, true, metric, selfParentHeader) {
+	// 	return nil
+	// }
 
 	// Add txs
 	em.addTxs(mutEvent, sortedTxs)
 
 	// Check if event should be emitted
 	// Check only if no txs were added, since check in a case with added txs was performed above
-	if mutEvent.Txs().Len() == 0 {
-		if !em.isAllowedToEmit(mutEvent, mutEvent.Txs().Len() != 0, metric, selfParentHeader) {
-			return nil
-		}
-	}
+	// if mutEvent.Txs().Len() == 0 {
+	// 	if !em.isAllowedToEmit(mutEvent, mutEvent.Txs().Len() != 0, metric, selfParentHeader) {
+	// 		return nil
+	// 	}
+	// }
 
 	// calc Merkle root
 	mutEvent.SetTxHash(hash.Hash(types.DeriveSha(mutEvent.Txs(), new(trie.Trie))))
