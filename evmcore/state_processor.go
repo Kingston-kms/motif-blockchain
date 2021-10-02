@@ -25,6 +25,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/params"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 // StateProcessor is a basic Processor, which takes care of transitioning
@@ -72,7 +73,7 @@ func (p *StateProcessor) Process(
 		var msg types.Message
 		if !internal {
 			fmt.Printf("==>NEW MESSAGE NON INTERNAL TO!!!", tx.To()) 
-			fmt.Printf("==>NEW MESSAGE NON INTERNAL DATA!!!", tx.Data())  
+			fmt.Printf("==>NEW MESSAGE NON INTERNAL DATA!!!", hexutil.Bytes(tx.Data()))  
 			msg, err = tx.AsMessage(types.MakeSigner(p.config, header.Number))
 			if err != nil {
 				return nil, nil, nil, err
@@ -82,6 +83,8 @@ func (p *StateProcessor) Process(
 			fmt.Printf("==>NEW MESSAGE INTERNAL DATA!!!", tx.Data())  
 			msg = types.NewMessage(common.Address{}, tx.To(), tx.Nonce(), tx.Value(), tx.Gas(), tx.GasPrice(), tx.Data(), tx.AccessList(), false)
 		}
+
+		
 
 		statedb.Prepare(tx.Hash(), block.Hash, i)
 		fmt.Printf("==>apply TRANSACTION!!!", msg)  

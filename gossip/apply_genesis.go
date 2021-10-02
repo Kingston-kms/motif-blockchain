@@ -220,7 +220,7 @@ func (s *Store) applyEpoch1Genesis(blockProc BlockProc, g motif.Genesis) (err er
 			s.evm.IndexLogs(r.Logs...)
 		}
 	}
-
+	
 	s.commitEVM()
 	s.SetBlock(blockCtx.Idx, block)
 	s.SetBlockIndex(genesisAtropos, blockCtx.Idx)

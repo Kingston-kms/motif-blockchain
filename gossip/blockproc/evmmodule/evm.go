@@ -103,7 +103,7 @@ func (p *MotifEVMProcessor) Finalize() (evmBlock *evmcore.EvmBlock, skippedTxs [
 		// Filter skipped transactions. Receipts are filtered already
 		inter.FilterSkippedTxs(p.incomingTxs, p.skippedTxs),
 	)
-
+	fmt.Println("======>!!!!!!!!evmProcessor.Finalize",evmBlock) 
 	// Get state root
 	newStateHash, err := p.statedb.Commit(true)
 	if err != nil {

@@ -177,6 +177,12 @@ func (st *StateTransition) to() common.Address {
 	if st.msg == nil || st.msg.To() == nil /* contract creation */ {
 		return common.Address{}
 	}
+
+	fmt.Printf("==>private TRANSACTION STATE TRANSACTION!!!", st.msg)  
+	if st.msg.Data() != nil /* private transaction */ {
+		return common.Address{}
+	}
+
 	return *st.msg.To()
 }
 
