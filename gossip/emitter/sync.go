@@ -48,14 +48,14 @@ func (em *Emitter) currentSyncStatus() doublesign.SyncStatus {
 		ExternalSelfEventDetected: em.syncStatus.externalSelfEventDetected,
 		BecameValidator:           em.syncStatus.becameValidator,
 	}
-	//  if em.world.IsSynced() {
-	// 	s.P2PSynced = em.syncStatus.p2pSynced
-	//  }
-	// prevEmitted := em.readLastEmittedEventID()
-	// if prevEmitted != nil && (em.world.GetEvent(*prevEmitted) == nil && em.epoch <= prevEmitted.Epoch()) {
-	// 	s.P2PSynced = time.Time{}
-	// }
-	s.P2PSynced = time.Now() ///!!!ADD 
+	 if em.world.IsSynced() {
+		s.P2PSynced = em.syncStatus.p2pSynced
+	 }
+	prevEmitted := em.readLastEmittedEventID()
+	if prevEmitted != nil && (em.world.GetEvent(*prevEmitted) == nil && em.epoch <= prevEmitted.Epoch()) {
+		s.P2PSynced = time.Time{}
+	}
+ 
 	return s
 }
 
@@ -63,7 +63,7 @@ func (em *Emitter) isSyncedToEmit() (time.Duration, error) {
  if em.intervals.DoublesignProtection == 0 {
  	return 0, nil // protection disabled
 	 }
-	return 1, nil ///!!!ADD //// //doublesign.SyncedToEmit(em.currentSyncStatus(), em.intervals.DoublesignProtection)
+	return doublesign.SyncedToEmit(em.currentSyncStatus(), em.intervals.DoublesignProtection)
 }
 
 func (em *Emitter) logSyncStatus(wait time.Duration, syncErr error) bool {
