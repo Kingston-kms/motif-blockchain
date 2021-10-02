@@ -20,12 +20,14 @@ import (
 	"fmt"
 	"math"
 	"math/big"
-
+ 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/params"
+
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 /*
@@ -254,6 +256,8 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	msg := st.msg
 	sender := vm.AccountRef(msg.From())
 	contractCreation := msg.To() == nil
+	privateTxn := hexutil.Bytes(msg.Data()) != nil//ADDED!!!!!!!!!!!!
+	fmt.Println("!!!!!privateTxn!!!!!!", privateTxn)
 
 	// Check clauses 4-5, subtract intrinsic gas if everything is correct
 	gas, err := IntrinsicGas(st.data, st.msg.AccessList(), contractCreation)
@@ -274,13 +278,36 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 		ret   []byte
 		vmerr error // vm errors do not effect consensus and are therefore not assigned to err
 	)
-	if contractCreation {
+
+
+	// if contractCreation {
+	// 	ret, _, st.gas, vmerr = st.evm.Create(sender, st.data, st.gas, st.value)
+	// } else {
+	// 	// Increment the nonce for the next transaction
+	// 	st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
+	// 	ret, st.gas, vmerr = st.evm.Call(sender, st.to(), st.data, st.gas, st.value)
+	// }//DELETED!!!!!!!!!!!!
+
+
+if !privateTxn && contractCreation {
 		ret, _, st.gas, vmerr = st.evm.Create(sender, st.data, st.gas, st.value)
+	} else if privateTxn && !contractCreation { ///!!!!!!!!!!!!!!!!!!!
+
+		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
+		ret, st.gas, vmerr = st.evm.Call(sender, st.to(), st.data, st.gas, st.value)
+		privateMsg :=types.NewMessage(st.msg.From(), nil, st.msg.Nonce(), st.msg.Value(), st.msg.Gas(), st.msg.GasPrice(), st.msg.Data(), st.msg.AccessList(), false)
+		st.msg = privateMsg
 	} else {
 		// Increment the nonce for the next transaction
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
 		ret, st.gas, vmerr = st.evm.Call(sender, st.to(), st.data, st.gas, st.value)
-	}
+		
+	}//ADDED!!!!!!!!!!!!
+
+
+
+
+
 	// use 10% of not used gas
 	if !st.internal() {
 		st.gas -= st.gas / 10

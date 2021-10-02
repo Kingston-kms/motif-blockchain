@@ -67,7 +67,7 @@ func (p *StateProcessor) Process(
 		blockContext = NewEVMBlockContext(header, p.bc, nil)
 		vmenv        = vm.NewEVM(blockContext, vm.TxContext{}, statedb, p.config, cfg)
 	)
-	fmt.Printf("PROCESSING TRANSACTIONS!!!!!!",block.Transactions)  
+	fmt.Printf("!!!!PROCESSING TRANSACTIONS!!!!!!HERE IS THE KEY PART!!!!",block.Transactions)  
 	// Iterate over and process the individual transactions
 	for i, tx := range block.Transactions {
 		var msg types.Message
@@ -137,12 +137,16 @@ func applyTransaction(
 	// Update the state with pending changes.
 	var root []byte
 	if config.IsByzantium(header.Number) {
+		fmt.Printf("==>!!!!statedb.Finalise Byzantium !!!",header.Number)  
 		statedb.Finalise(true)
 	} else {
+		fmt.Printf("==>!!!!statedb.Finalise nonByzantium !!!",header.Number) 
 		root = statedb.IntermediateRoot(config.IsEIP158(header.Number)).Bytes()
 	}
 	*usedGas += result.UsedGas
 
+	///!!!!!!TRANSACTION IS SAVED,  HERE YOU CAN UPDATE THE STATE
+	
 	// Create a new receipt for the transaction, storing the intermediate root and gas used
 	// by the tx.
 	receipt := &types.Receipt{Type: tx.Type(), PostState: root, CumulativeGasUsed: *usedGas}
@@ -151,13 +155,14 @@ func applyTransaction(
 	} else {
 		receipt.Status = types.ReceiptStatusSuccessful
 	}
-	receipt.TxHash = tx.Hash()
+	fmt.Printf("==>!!!!things happen here tx.Hash() !!!",tx.Hash() )  
+	receipt.TxHash = tx.Hash() ///!!!! 
 	receipt.GasUsed = result.UsedGas
 
 
-	fmt.Printf("==>TRANSACTION TO DOES NOT CREATE CONTRACT!!! 1", evm.TxContext)  
-	fmt.Printf("==>TRANSACTION TO DOES NOT CREATE CONTRACT!!! 2", msg)  
-	fmt.Printf("==>TRANSACTION TO DOES NOT CREATE CONTRACT!!! 3", tx)  
+	fmt.Printf("==>!!!!TRANSACTION TO DOES NOT CREATE CONTRACT!!! 1", evm.TxContext)  
+	fmt.Printf("==>!!!!TRANSACTION TO DOES NOT CREATE CONTRACT!!! 2", msg)  
+	fmt.Printf("==>!!!!TRANSACTION TO DOES NOT CREATE CONTRACT!!! 3", tx)  
 	// If the transaction created a contract, store the creation address in the receipt.
 	if msg.To() == nil {
 		receipt.ContractAddress = crypto.CreateAddress(evm.TxContext.Origin, tx.Nonce())

@@ -264,8 +264,7 @@ func consensusCallbackBeginBlockFn(
 						}
 					}
 					for _, tx := range append(preInternalTxs, internalTxs...) {
-						fmt.Println("======>!!!!!!!!C_BLOCK_CALLBACK SET_TX 265",tx.Hash()) 
-						fmt.Println("======>!!!!!!!!C_BLOCK_CALLBACK SET_TX 265",tx) 
+						///doesnt get here
 						store.evm.SetTx(tx.Hash(), tx)
 					}
 
