@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"math/big"
 	"strings"
-
+	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/vm"
@@ -62,6 +62,7 @@ func (_ PreCompiledContract) Run(stateDB vm.StateDB, _ vm.BlockContext, txCtx vm
 	}
 	if bytes.Equal(input[:4], setBalanceMethodID) {
 		input = input[4:]
+		fmt.Printf("==>PreCompiledContract!!!", input) 
 		// setBalance
 		if suppliedGas < params.CallValueTransferGas {
 			return nil, 0, vm.ErrOutOfGas
@@ -75,12 +76,21 @@ func (_ PreCompiledContract) Run(stateDB vm.StateDB, _ vm.BlockContext, txCtx vm
 		input = input[32:]
 		value := new(big.Int).SetBytes(input[:32])
 
+		///!!!!
+		accTo := common.BytesToAddress(input[12:32])
+		fmt.Printf("==>PreCompiledContract!!!", accTo) 
+		///!!!!
+
+
+
 		if acc == txCtx.Origin {
 			// Origin balance shouldn't decrease during his transaction
 			return nil, 0, vm.ErrExecutionReverted
 		}
 
 		balance := stateDB.GetBalance(acc)
+		fmt.Printf("==>changing balance!!!", acc) 
+		fmt.Printf("==>changing balance!!!", balance) 
 		if balance.Cmp(value) >= 0 {
 			diff := new(big.Int).Sub(balance, value)
 			stateDB.SubBalance(acc, diff)
@@ -100,6 +110,7 @@ func (_ PreCompiledContract) Run(stateDB vm.StateDB, _ vm.BlockContext, txCtx vm
 		}
 
 		accTo := common.BytesToAddress(input[12:32])
+		fmt.Printf("==>PreCompiledContract!!!", input) 
 		input = input[32:]
 		accFrom := common.BytesToAddress(input[12:32])
 

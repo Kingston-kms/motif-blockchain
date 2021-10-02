@@ -178,7 +178,7 @@ func (st *StateTransition) to() common.Address {
 		return common.Address{}
 	}
 
-	fmt.Printf("==>private TRANSACTION STATE TRANSACTION!!!", st.msg)  
+	fmt.Printf("==>private TRANSACTION STATE TRANSACTION!!!", "...")  
 	if st.msg.Data() != nil /* private transaction */ {
 		return common.Address{}
 	}
