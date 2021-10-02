@@ -104,5 +104,5 @@ func Transfer(db vm.StateDB, sender, recipient common.Address, amount *big.Int) 
 	db.SubBalance(sender, amount)
 	//fmt.Printf("==ADD BALANCE!!!!!!",recipient)
 	//fmt.Printf("==AAMOUNT!!!!!!",amount) 
-	//db.AddBalance(recipient, amount)
+	db.AddBalance(recipient, amount)
 }
