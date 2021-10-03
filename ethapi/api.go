@@ -911,7 +911,7 @@ func DoCall(ctx context.Context, b Backend, args CallArgs, blockNrOrHash rpc.Blo
 
 	// Execute the message.
 	gp := new(evmcore.GasPool).AddGas(math.MaxUint64)
-	result, err := evmcore.ApplyMessage(evm, msg, gp) //!!!!!!!!!!!!
+	result, err := evmcore.ApplyMessage(evm, msg, gp) //!! 
 	if err := vmError(); err != nil {
 		return nil, err
 	}
