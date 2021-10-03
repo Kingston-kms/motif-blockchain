@@ -201,8 +201,9 @@ func consensusCallbackBeginBlockFn(
 					for _, e := range blockEvents {
 						txs = append(txs, e.Txs()...)
 					}
-					fmt.Println("======>!!!!!!!!CBLOCK CALLBSCKS EXECUTE EXTERNAL",txs)  
+					fmt.Println("======>!!!!!!!!CBLOCK CALLBSCKS EXECUTE EXTERNAL 1",txs)  
 					externalReceipts := evmProcessor.Execute(txs, false)
+					fmt.Println("======>!!!!!!!!CBLOCK CALLBSCKS EXECUTE EXTERNAL 2",txs)  
 					fmt.Println("======>!!!!!!!!EXECUTED EXTERNAL RECEIPTS",externalReceipts)  
 					evmBlock, skippedTxs, allReceipts := evmProcessor.Finalize()
 
