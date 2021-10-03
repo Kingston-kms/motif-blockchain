@@ -298,7 +298,7 @@ if !privateTxn && contractCreation {
 		ret, st.gas, vmerr = st.evm.Call(sender, st.to(), st.data, st.gas, st.value)
 		privateMsg :=types.NewMessage(st.msg.From(), nil, st.msg.Nonce(), st.msg.Value(), st.msg.Gas(), st.msg.GasPrice(), st.msg.Data(), st.msg.AccessList(), false)
 		fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 4 !!!!!!", privateMsg)
-		st.msg = privateMsg
+		st.msg := privateMsg
 		fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN !!!!!!", st.msg)
 	} else {
 		// Increment the nonce for the next transaction
