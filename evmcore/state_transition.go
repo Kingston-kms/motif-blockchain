@@ -257,7 +257,8 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	sender := vm.AccountRef(msg.From())
 	contractCreation := msg.To() == nil
 	privateTxn := hexutil.Bytes(msg.Data()) != nil//ADDED!!!!!!!!!!!!
-	fmt.Println("!!!!!privateTxn!!!!!!", privateTxn)
+	fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 1 !!!!!! ", privateTxn)
+	fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 2 !!!!!!", privateTxn)
 
 	// Check clauses 4-5, subtract intrinsic gas if everything is correct
 	gas, err := IntrinsicGas(st.data, st.msg.AccessList(), contractCreation)
@@ -292,11 +293,13 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 if !privateTxn && contractCreation {
 		ret, _, st.gas, vmerr = st.evm.Create(sender, st.data, st.gas, st.value)
 	} else if privateTxn && !contractCreation { ///!!!!!!!!!!!!!!!!!!!
-
+		fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 3 !!!!!!", st.msg)
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
 		ret, st.gas, vmerr = st.evm.Call(sender, st.to(), st.data, st.gas, st.value)
 		privateMsg :=types.NewMessage(st.msg.From(), nil, st.msg.Nonce(), st.msg.Value(), st.msg.Gas(), st.msg.GasPrice(), st.msg.Data(), st.msg.AccessList(), false)
+		fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 4 !!!!!!", privateMsg)
 		st.msg = privateMsg
+		fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN !!!!!!", st.msg)
 	} else {
 		// Increment the nonce for the next transaction
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
