@@ -91,8 +91,8 @@ var (
 	}
 
 	AllowedMotifGenesisHashes = map[uint64]hash.Hash{
-		motif.MainNetworkID: hash.HexToHash("0x3afd202dfa7ff114f2cac629507eb711f8256ce4367a6ab221ef370c1904c5c7"),
-		motif.TestNetworkID: hash.HexToHash("0x3afd202dfa7ff114f2cac629507eb711f8256ce4367a6ab221ef370c1904c5c7"),
+		motif.MainNetworkID: hash.HexToHash("0x4e130f7df1af8954a916857d829b134f3aa900f9215f82d60946a117f714ef06"),
+		motif.TestNetworkID: hash.HexToHash("0x4e130f7df1af8954a916857d829b134f3aa900f9215f82d60946a117f714ef06"),
 	}
 )
 
