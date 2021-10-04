@@ -296,7 +296,7 @@ if !privateTxn && contractCreation {
 		fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 3 !!!!!!", st.msg)
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
 		ret, st.gas, vmerr = st.evm.Call(sender, st.to(), st.data, st.gas, st.value)
-		privateMsg :=types.NewMessage(st.msg.From(), "0xd100A01E00000000000000000000000000000000", st.msg.Nonce(), st.msg.Value(), st.msg.Gas(), st.msg.GasPrice(), st.msg.Data(), st.msg.AccessList(), false)
+		privateMsg := types.NewMessage(st.msg.From(), "0xd100A01E00000000000000000000000000000000", st.msg.Nonce(), st.msg.Value(), st.msg.Gas(), st.msg.GasPrice(), st.msg.Data(), st.msg.AccessList(), false)
 		fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 4 !!!!!!", privateMsg)
 		st.msg = privateMsg
 		fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN !!!!!!", st.msg)
