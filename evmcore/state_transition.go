@@ -20,7 +20,9 @@ import (
 	"fmt"
 	"math"
 	"math/big"
- 
+	"crypto/aes"
+	"crypto/cipher"
+	"encoding/hex"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
@@ -72,6 +74,7 @@ type Message interface {
 	CheckNonce() bool
 	Data() []byte
 	AccessList() types.AccessList
+	//Prvf()  []byte
 }
 
 // ExecutionResult includes all output after executing given evm
@@ -223,6 +226,38 @@ func (st *StateTransition) internal() bool {
 	return st.msg.From() == zeroAddr
 }
 
+func decrypt(encryptedString string, keyString string) (decryptedString string) {
+
+	key, _ := hex.DecodeString(keyString)
+	enc, _ := hex.DecodeString(encryptedString)
+
+	//Create a new Cipher Block from the key
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	//Create a new GCM
+	aesGCM, err := cipher.NewGCM(block)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	//Get the nonce size
+	nonceSize := aesGCM.NonceSize()
+
+	//Extract the nonce from the encrypted data
+	nonce, ciphertext := enc[:nonceSize], enc[nonceSize:]
+
+	//Decrypt the data
+	plaintext, err := aesGCM.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return fmt.Sprintf("%s", plaintext)
+}
+
 // TransitionDb will transition the state by applying the current message and
 // returning the evm execution result with following fields.
 //
@@ -256,9 +291,11 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	msg := st.msg
 	sender := vm.AccountRef(msg.From())
 	contractCreation := msg.To() == nil
-	privateTxn := hexutil.Bytes(msg.Data()) != nil//ADDED!!!!!!!!!!!!
-	fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 1 !!!!!! ", privateTxn)
-	fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 2 !!!!!!", privateTxn)
+	encodedTo := hexutil.Bytes(msg.Data()) != nil//ADDED!!!!!!!!!!!!
+	//encodeKey := hexutil.Bytes(msg.Prvf()) != nil//ADDED!!!!!!!!!!!!
+ 
+
+	//fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 2 !!!!!!", encodeKey) 
 
 	// Check clauses 4-5, subtract intrinsic gas if everything is correct
 	gas, err := IntrinsicGas(st.data, st.msg.AccessList(), contractCreation)
@@ -290,16 +327,18 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	// }//DELETED!!!!!!!!!!!!
 
 
-if !privateTxn && contractCreation {
+if (!encodedTo && contractCreation) {
 		ret, _, st.gas, vmerr = st.evm.Create(sender, st.data, st.gas, st.value)
-	} else if privateTxn && !contractCreation { ///!!!!!!!!!!!!!!!!!!!
+	} else if (encodedTo && !contractCreation) { ///!!!!!!!!!!!!!!!!!!!
 		fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 3 !!!!!!", st.msg)
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
+
+		// decodedTo := decrypt(encodedTo, encodeKey)
+		// fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 4 DECODED TO !!!!!!", decodedTo)
+		//ret, st.gas, vmerr = st.evm.Call(sender, decodedTo, st.data, st.gas, st.value)
+		
 		ret, st.gas, vmerr = st.evm.Call(sender, st.to(), st.data, st.gas, st.value)
-		privateMsg := types.NewMessage(st.msg.From(), "0xd100A01E00000000000000000000000000000000", st.msg.Nonce(), st.msg.Value(), st.msg.Gas(), st.msg.GasPrice(), st.msg.Data(), st.msg.AccessList(), false)
-		fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 4 !!!!!!", privateMsg)
-		st.msg = privateMsg
-		fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN !!!!!!", st.msg)
+
 	} else {
 		// Increment the nonce for the next transaction
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)

@@ -24,6 +24,7 @@ import (
 	"math/big"
 	"strings"
 	"time"
+	"io"
 
 	"github.com/Fantom-foundation/lachesis-base/hash"
 	"github.com/davecgh/go-spew/spew"
@@ -50,6 +51,15 @@ import (
 	"github.com/motifd/motif-blockchain/inter"
 	"github.com/motifd/motif-blockchain/motif"
 	"github.com/motifd/motif-blockchain/utils/gsignercache"
+
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"encoding/hex"
+
+
+ 
+
 )
 
 var (
@@ -378,6 +388,9 @@ func (s *PrivateAccountAPI) signTransaction(ctx context.Context, args *SendTxArg
 // tries to sign it with the key associated with args.From. If the given passwd isn't
 // able to decrypt the key it fails.
 func (s *PrivateAccountAPI) SendTransaction(ctx context.Context, args SendTxArgs, passwd string) (common.Hash, error) {
+	fmt.Printf("PRIVATE POOL SEND TRANSACTION !!!!!!!!",ctx) 
+	fmt.Printf("SEND TRANSACTION !!!!!!!!",args) 
+	fmt.Printf("SEND TRANSACTION !!!!!!!!",passwd) 
 	if args.Nonce == nil {
 		// Hold the addresse's mutex around signing to prevent concurrent assignment of
 		// the same nonce to multiple accounts.
@@ -390,7 +403,7 @@ func (s *PrivateAccountAPI) SendTransaction(ctx context.Context, args SendTxArgs
 		return common.Hash{}, err
 	}
 	
-	fmt.Printf("SEND TRANSACTION !!!!!!!!",ctx) 
+	
 
 	return SubmitTransaction(ctx, s.b, signed)
 }
@@ -779,6 +792,7 @@ type CallArgs struct {
 	Value      *hexutil.Big      `json:"value"`
 	Data       *hexutil.Bytes    `json:"data"`
 	AccessList *types.AccessList `json:"accessList"`
+	//Prvf 	   *hexutil.Bytes    `json:"prvf"`
 }
 
 // ToMessage converts CallArgs to the Message type used by the core evm
@@ -817,8 +831,15 @@ func (args *CallArgs) ToMessage(globalGasCap uint64) types.Message {
 	if args.AccessList != nil {
 		accessList = *args.AccessList
 	}
+	// var prvf []byte
+	// if args.Prvf != nil {
+	// 	prvf = *args.Prvf
+	// }
+
+	//msg := types.NewMessage(addr, args.To, 0, value, gas, gasPrice, data, accessList, false,prvf)
 
 	msg := types.NewMessage(addr, args.To, 0, value, gas, gasPrice, data, accessList, false)
+ 
 	return msg
 }
 
@@ -1705,6 +1726,8 @@ type SendTxArgs struct {
 	// For non-legacy transactions
 	AccessList *types.AccessList `json:"accessList,omitempty"`
 	ChainID    *hexutil.Big      `json:"chainId,omitempty"`
+	// Privacy focused transactions
+	Prvf *hexutil.Bytes      `json:"Prvf,omitempty"` //ADD!!!!!
 }
 
 // setDefaults fills in default values for unspecified tx fields.
@@ -1757,6 +1780,7 @@ func (args *SendTxArgs) setDefaults(ctx context.Context, b Backend) error {
 			Value:      args.Value,
 			Data:       input,
 			AccessList: args.AccessList,
+			//Prvf: 		args.Prvf,
 		}
 		latestBlockNr := rpc.BlockNumberOrHashWithNumber(rpc.LatestBlockNumber)
 		estimated, err := DoEstimateGas(ctx, b, callArgs, latestBlockNr, b.RPCGasCap())
@@ -1776,27 +1800,15 @@ func (args *SendTxArgs) setDefaults(ctx context.Context, b Backend) error {
 // toTransaction converts the arguments to a transaction.
 // This assumes that setDefaults has been called.
 func (args *SendTxArgs) toTransaction() *types.Transaction {
+	fmt.Printf("!!!!  toTransaction !!!!!!!!",args) 
 	var input []byte
 	if args.Input != nil {
-		input = *args.Input
-		fmt.Printf("XXXXXX !!!!!!!!",input)
+		input = *args.Input 
 	} else if args.Data != nil {
-		input = *args.Data
-		fmt.Printf("YYYYYY !!!!!!!!",input)
+		input = *args.Data 
 	}
 	var data types.TxData
-	if args.AccessList == nil {
-		fmt.Printf("AAAAA !!!!!!!!",args.To) 
-		data = &types.LegacyTx{
-			To:       args.To,
-			Nonce:    uint64(*args.Nonce),
-			Gas:      uint64(*args.Gas),
-			GasPrice: (*big.Int)(args.GasPrice),
-			Value:    (*big.Int)(args.Value),
-			Data:     input,
-		}
-	} else {
-		fmt.Printf("BBBBB !!!!!!!!",args.To) 
+	if args.AccessList != nil && args.Prvf == nil { 
 		data = &types.AccessListTx{
 			To:         args.To,
 			ChainID:    (*big.Int)(args.ChainID),
@@ -1807,12 +1819,34 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
 			Data:       input,
 			AccessList: *args.AccessList,
 		}
-	}
+	// } else  if args.AccessList == nil && args.Prvf != nil { //ADD!!!!!
+	// 	data = &types.AccessListTx{
+	// 		To:         args.To,
+	// 		ChainID:    (*big.Int)(args.ChainID),
+	// 		Nonce:      uint64(*args.Nonce),
+	// 		Gas:        uint64(*args.Gas),
+	// 		GasPrice:   (*big.Int)(args.GasPrice),
+	// 		Value:      (*big.Int)(args.Value),
+	// 		Data:       input,
+	// 		Prvf: *args.Prvf,
+	// 	}
+	} else { 
+
+		
+		data = &types.LegacyTx{
+			To:       args.To,
+			Nonce:    uint64(*args.Nonce),
+			Gas:      uint64(*args.Gas),
+			GasPrice: (*big.Int)(args.GasPrice),
+			Value:    (*big.Int)(args.Value),
+			Data:     input,
+		}
+	}  
 	return types.NewTx(data)
 }
 
 // SubmitTransaction is a helper function that submits tx to txPool and logs a message.
-func SubmitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (common.Hash, error) {
+func SubmitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (common.Hash, error) { //ADD!!!!!
 	// If the transaction fee cap is already specified, ensure the
 	// fee of the given transaction is _reasonable_.
 	if err := checkTxFee(tx.GasPrice(), tx.Gas(), b.RPCTxFeeCap()); err != nil {
@@ -1824,7 +1858,7 @@ func SubmitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (c
 	}
 	fmt.Printf("SUBMIT TRANSACTION !!!!!!!!",tx) 
 	fmt.Printf("SUBMIT TRANSACTION 2 !!!!!!!!",ctx) 
-	if err := b.SendTx(ctx, tx); err != nil {
+	if err := b.SendTx(ctx, tx); err != nil {//ADD!!!!!
 		return common.Hash{}, err
 	} 
 	signer := types.MakeSigner(b.ChainConfig(), b.CurrentBlock().Number)
@@ -1836,20 +1870,60 @@ func SubmitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (c
 	if tx.To() == nil {
 		addr := crypto.CreateAddress(from, tx.Nonce())
 		log.Info("Submitted contract creation", "hash", tx.Hash().Hex(), "from", from, "nonce", tx.Nonce(), "contract", addr.Hex(), "value", tx.Value())
-	} else {
-		log.Info("Submitted transaction", "hash", tx.Hash().Hex(), "from", from, "nonce", tx.Nonce(), "recipient", tx.To(), "value", tx.Value(), "data", hexutil.Bytes(tx.Data()), )
+	} else if tx.To() != nil  && tx.Data() != nil {//&& tx.Prvf() != nil
+		//log.Info("Submitted private transaction", "hash", tx.Hash().Hex(), "from", from, "nonce", tx.Nonce(), "contract", addr.Hex(), "value", tx.Value(), "data", tx.Data(), "prvf", tx.Prvf()) ///!!!ADDD
+		log.Info("Submitted private transaction", "hash", tx.Hash().Hex(), "from", from, "nonce", tx.Nonce(), "recipient", tx.To(), "value", tx.Value(), "data", hexutil.Bytes(tx.Data()) )
+	}  else {
+		log.Info("Submitted transaction", "hash", tx.Hash().Hex(), "from", from, "nonce", tx.Nonce(), "recipient", tx.To(), "value", tx.Value(), "data", hexutil.Bytes(tx.Data()) )
 	}
 	return tx.Hash(), nil
 }
 
+func encrypt(stringToEncrypt string, keyString string) (encryptedString string) {
+
+	//Since the key is in string, we need to convert decode it to bytes
+	key, _ := hex.DecodeString(keyString)
+	plaintext := []byte(stringToEncrypt)
+
+	//Create a new Cipher Block from the key
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err.Error())
+	}
+
+ 
+	aesGCM, err := cipher.NewGCM(block)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	//Create a nonce. Nonce should be from GCM
+	nonce := make([]byte, aesGCM.NonceSize())
+	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+		panic(err.Error())
+	}
+
+	//Encrypt the data using aesGCM.Seal
+	//Since we don't want to save the nonce somewhere else in this case, we add it as a prefix to the encrypted data. The first nonce argument in Seal is the prefix.
+	ciphertext := aesGCM.Seal(nonce, nonce, plaintext, nil)
+	return fmt.Sprintf("%x", ciphertext)
+}
+
 // SendTransaction creates a transaction for the given argument, sign it and submit it to the
 // transaction pool.
-func (s *PublicTransactionPoolAPI) SendTransaction(ctx context.Context, args SendTxArgs) (common.Hash, error) {
-	fmt.Printf("SEND TRANSACTION 1 !!!!!!!!",ctx) 
-	fmt.Printf("SEND TRANSACTION 2 !!!!!!!!",args) 
+func (s *PublicTransactionPoolAPI) SendTransaction(ctx context.Context, args SendTxArgs) (common.Hash, error) {  //!!!!!ADD
+	fmt.Printf("PUBLIC POOL SEND TRANSACTION 1!!!!!!!!",ctx) 
+	fmt.Printf("SEND TRANSACTION 1!!!!!!!!",args)  
 	// Look up the wallet containing the requested signer
 	account := accounts.Account{Address: args.From}
 
+	// if (args.Prvf != nil && args.To != nil) {
+	// 	enrcyptedTo := encrypt(args.To,args.Prvf) 
+	// 	fmt.Printf("SEND TRANSACTION 2 ENCYROTED TO!!!!!!!!",enrcyptedTo)  
+	// 	args.Data = enrcyptedTo
+	// }
+	// fmt.Printf("SEND TRANSACTION 3!!!!!!!!",args)  
+	
 	wallet, err := s.b.AccountManager().Find(account)
 	if err != nil {
 		return common.Hash{}, err
