@@ -455,6 +455,8 @@ func newTxPricedList(all *txLookup) *txPricedList {
 	}
 }
 
+
+
 // Put inserts a new transaction into the heap.
 func (l *txPricedList) Put(tx *types.Transaction, local bool) {
 	if local {

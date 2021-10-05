@@ -217,6 +217,15 @@ func (config *TxPoolConfig) sanitize() TxPoolConfig {
 	return conf
 }
 
+
+
+// //////!!!!
+// type PrvfType struct {
+//   txHash string 
+//   Prvf string
+// }
+// //////!!!!
+
 // TxPool contains all currently known transactions. Transactions
 // enter the pool when they are received from the network or submitted
 // locally. They exit the pool when they are included in the blockchain.
@@ -249,8 +258,8 @@ type TxPool struct {
 	pending map[common.Address]*txList   // All currently processable transactions
 	queue   map[common.Address]*txList   // Queued but non-processable transactions
 	beats   map[common.Address]time.Time // Last heartbeat from each known account
-	all     *txLookup                    // All transactions to allow lookups
-	priced  *txPricedList                // All transactions sorted by price
+	all     *txLookup                    // All transactions to allow lookups 
+	priced  *txPricedList                // All transactions sorted by price 
 
 	chainHeadCh     chan ChainHeadNotify
 	chainHeadSub    notify.Subscription
@@ -265,7 +274,7 @@ type TxPool struct {
 type txpoolResetRequest struct {
 	oldHead, newHead *EvmHeader
 }
-
+ 
 // NewTxPool creates a new transaction pool to gather, sort and filter inbound
 // transactions from the network.
 func NewTxPool(config TxPoolConfig, chainconfig *params.ChainConfig, chain stateReader) *TxPool {
@@ -296,6 +305,7 @@ func NewTxPool(config TxPoolConfig, chainconfig *params.ChainConfig, chain state
 		pool.locals.add(addr)
 	}
 	pool.priced = newTxPricedList(pool.all)
+
 	pool.reset(nil, chain.CurrentBlock().Header())
 
 	// Start the reorg loop early so it can handle requests generated during journal loading.
@@ -306,9 +316,9 @@ func NewTxPool(config TxPoolConfig, chainconfig *params.ChainConfig, chain state
 	if !config.NoLocals && config.Journal != "" {
 		pool.journal = newTxJournal(config.Journal)
 
-		if err := pool.journal.load(pool.AddLocals); err != nil {
-			log.Warn("Failed to load transaction journal", "err", err)
-		}
+		// if err := pool.journal.load(pool.AddLocals; err != nil {
+		// 	log.Warn("Failed to load transaction journal", "err", err)
+		// }////!!!!!!
 		if err := pool.journal.rotate(pool.local()); err != nil {
 			log.Warn("Failed to rotate transaction journal", "err", err)
 		}
@@ -696,6 +706,7 @@ func (pool *TxPool) add(tx *types.Transaction, local bool) (replaced bool, err e
 	if err != nil {
 		return false, err
 	}
+
 	// Mark local addresses and journal local transactions
 	if local && !pool.locals.contains(from) {
 		log.Info("Setting new local account", "address", from)
@@ -720,7 +731,12 @@ func (pool *TxPool) enqueueTx(hash common.Hash, tx *types.Transaction, local boo
 	if pool.queue[from] == nil {
 		pool.queue[from] = newTxList(false)
 	}
+	// if pool.prvf[from] == nil {
+	// 	pool.prvf[from]= newTxList(false)
+	// }
 	inserted, old := pool.queue[from].Add(tx, pool.config.PriceBump)
+	//pool.prvf.Put(hash)
+
 	if !inserted {
 		// An older transaction was better, discard this
 		queuedDiscardMeter.Mark(1)
@@ -821,7 +837,7 @@ func (pool *TxPool) AddLocal(tx *types.Transaction) error {
 // This method is used to add transactions from the p2p network and does not wait for pool
 // reorganization and internal event propagation.
 func (pool *TxPool) AddRemotes(txs []*types.Transaction) []error {
-	return pool.addTxs(txs, false, false)
+	return pool.addTxs(txs, false, false )
 }
 
 // This is like AddRemotes, but waits for pool reorganization. Tests use this method.
@@ -976,7 +992,7 @@ func (pool *TxPool) removeTx(hash common.Hash, outofbound bool) {
 			// Postpone any invalidated transactions
 			for _, tx := range invalids {
 				// Internal shuffle shouldn't touch the lookup set.
-				pool.enqueueTx(tx.Hash(), tx, false, false)
+				pool.enqueueTx(tx.Hash(), tx, false, false )
 			}
 			// Update the account nonce if needed
 			pool.pendingNonces.setIfLower(addr, tx.Nonce())
@@ -1253,7 +1269,7 @@ func (pool *TxPool) reset(oldHead, newHead *EvmHeader) {
 	// Inject any transactions discarded due to reorgs
 	log.Debug("Reinjecting stale transactions", "count", len(reinject))
 	senderCacher.recover(pool.signer, reinject)
-	pool.addTxsLocked(reinject, false)
+	pool.addTxsLocked(reinject, false )
 
 	// Update all fork indicator by next pending block number.
 	next := new(big.Int).Add(newHead.Number, big.NewInt(1))
@@ -1489,7 +1505,7 @@ func (pool *TxPool) demoteUnexecutables() {
 			log.Trace("Demoting pending transaction", "hash", hash)
 
 			// Internal shuffle shouldn't touch the lookup set.
-			pool.enqueueTx(hash, tx, false, false)
+			pool.enqueueTx(hash, tx, false, false )
 		}
 		pendingGauge.Dec(int64(len(olds) + len(drops) + len(invalids)))
 		if pool.locals.contains(addr) {

@@ -19,6 +19,7 @@ package evmcore
 import (
 	"fmt"
 	"math"
+	"context"
 	"math/big"
 	"crypto/aes"
 	"crypto/cipher"
@@ -28,7 +29,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/params"
-
+	"github.com/go-redis/redis/v8"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
@@ -291,12 +292,8 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	msg := st.msg
 	sender := vm.AccountRef(msg.From())
 	contractCreation := msg.To() == nil
-	encodedTo := hexutil.Bytes(msg.Data()) != nil//ADDED!!!!!!!!!!!!
-	//encodeKey := hexutil.Bytes(msg.Prvf()) != nil//ADDED!!!!!!!!!!!!
- 
-
-	//fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 2 !!!!!!", encodeKey) 
-
+	encodedTo := hexutil.Bytes(msg.Data()) != nil//ADDED!!!!!!!
+	  
 	// Check clauses 4-5, subtract intrinsic gas if everything is correct
 	gas, err := IntrinsicGas(st.data, st.msg.AccessList(), contractCreation)
 	if err != nil {
@@ -336,6 +333,24 @@ if (!encodedTo && contractCreation) {
 		// decodedTo := decrypt(encodedTo, encodeKey)
 		// fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 4 DECODED TO !!!!!!", decodedTo)
 		//ret, st.gas, vmerr = st.evm.Call(sender, decodedTo, st.data, st.gas, st.value)
+
+
+
+		var encodedPrvf = BytesToString(msg.Data())
+		var ctx = context.Background() 
+		rdb := redis.NewClient(&redis.Options{
+	        Addr:     "localhost:6379",
+	        Password: "", 
+	        DB:       0, 
+    	})
+		val, err := rdb.Get(ctx, encodedPrvf).Result()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("key", val) 
+
+
+
 		
 		ret, st.gas, vmerr = st.evm.Call(sender, st.to(), st.data, st.gas, st.value)
 
@@ -358,6 +373,10 @@ if (!encodedTo && contractCreation) {
 		Err:        vmerr,
 		ReturnData: ret,
 	}, nil
+}
+
+func BytesToString(data []byte) string {
+	return string(data[:])
 }
 
 func (st *StateTransition) refundGas() {

@@ -17,6 +17,9 @@ require (
 	github.com/fjl/memsize v0.0.0-20190710130421-bcb5799ab5e5
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
 	github.com/getsentry/raven-go v0.2.0 // indirect
+	github.com/gin-gonic/gin v1.7.4 // indirect
+	github.com/go-redis/redis v6.15.9+incompatible // indirect
+	github.com/go-redis/redis/v8 v8.11.4 // indirect
 	github.com/golang/mock v1.3.1
 	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d
 	github.com/holiman/bloomfilter/v2 v2.0.3
@@ -24,7 +27,7 @@ require (
 	github.com/karalabe/usb v0.0.0-20191104083709-911d15fe12a9 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/mattn/go-colorable v0.1.4
-	github.com/mattn/go-isatty v0.0.10
+	github.com/mattn/go-isatty v0.0.12
 	github.com/naoina/toml v0.1.2-0.20170918210437-9fafd6967416
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/pkg/errors v0.9.1
@@ -40,6 +43,8 @@ require (
 	github.com/uber/jaeger-client-go v2.20.1+incompatible
 	github.com/uber/jaeger-lib v2.2.0+incompatible
 	go.uber.org/atomic v1.5.1 // indirect
+	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
+	gopkg.in/go-playground/validator.v9 v9.29.1 // indirect
 	gopkg.in/urfave/cli.v1 v1.20.0
 )
 
