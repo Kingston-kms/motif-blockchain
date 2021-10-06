@@ -1377,11 +1377,10 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
     	result.To = nil
     	fmt.Println("!!!!newRPCTransaction Result To=>",  result.To) 
 
-    	prvf, err := hex.DecodeString(BytesToString(hexutil.Bytes(result.Input))  )
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println("!!!!newRPCTransaction Result prvf=>",string(prvf)) 
+
+    	prvf := BytesToString(result.Input ) 
+ 
+		fmt.Println("!!!!newRPCTransaction Result prvf=>", prvf) 
 
     	// hexutil.Bytes(result.Input)
 
