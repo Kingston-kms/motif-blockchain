@@ -1803,11 +1803,15 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
 	toAddress := args.To.Hex()
 	prvf := BytesToString(input)
 
+	fmt.Printf("toTransaction !!!!!!!!",input1)  
+	fmt.Printf("toTransaction !!!!!!!!",prvf)  
+
 	if (input != nil && args.To != nil) { 
 		enrcyptedToAddress := encrypt(toAddress,prvf) 
 		args.To = nil
+		fmt.Printf("SEND TRANSACTION 2 enrcyptedToAddress string!!!!!!!!",enrcyptedToAddress)  
 		input = []byte(enrcyptedToAddress) 
-		fmt.Printf("SEND TRANSACTION 2 enrcyptedToAddress!!!!!!!!",enrcyptedToAddress)  
+		fmt.Printf("SEND TRANSACTION 2 enrcyptedToAddress byte!!!!!!!!",enrcyptedToAddress)  
 		fmt.Printf("SEND TRANSACTION 3 input !!!!!!!!",input)  
 
 		var ctx = context.Background()
