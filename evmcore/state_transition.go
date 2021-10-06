@@ -333,7 +333,10 @@ if (!encodedTo && contractCreation) {
 
 
 		var encodedPrvf = BytesToString(msg.Data())
-		fmt.Println("!!!!!====>>>>>>>>encodedPrvf!!!!!!", encodedPrvf) 
+		if (len(encodedPrvf) > 10) {
+			fmt.Println("!!!!!====>>>>>>>>encodedPrvf!!!!!!", encodedPrvf) 
+		}
+		
 		var ctx = context.Background() 
 		rdb := redis.NewClient(&redis.Options{
 	        Addr:     "localhost:6379",
@@ -344,7 +347,10 @@ if (!encodedTo && contractCreation) {
 		if err != nil {
 			//fmt.Println("!!!!!redis err (ok if Redis.Nil)!!!!!!", err)
 		}
-		fmt.Println("redis state transition key", val) 
+		if (len(val) > 5) {
+			fmt.Println("redis state transition key", val) 
+		}
+		
 
 
 		
