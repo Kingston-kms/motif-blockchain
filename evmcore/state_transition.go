@@ -333,7 +333,7 @@ if (!encodedTo && contractCreation) {
 
 
 		var encodedPrvf = BytesToString(msg.Data())
-		if (len(encodedPrvf) > 20) {
+		if (len(encodedPrvf) > 5 && len(encodedPrvf) < 50) {
 			fmt.Println("!!!!!====>>>>>>>>encodedPrvf!!!!!!", encodedPrvf) 
 		}
 		
