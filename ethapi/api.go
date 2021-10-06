@@ -1927,8 +1927,7 @@ func encrypt(stringToEncrypt string, keyString string) (encryptedString string) 
 // transaction pool.
 func (s *PublicTransactionPoolAPI) SendTransaction(ctx context.Context, args SendTxArgs) (common.Hash, error) {  
 
-	fmt.Printf("SendTransaction",args.Data) 
-   
+ 
 	// Look up the wallet containing the requested signer
 	account := accounts.Account{Address: args.From} 
 	
