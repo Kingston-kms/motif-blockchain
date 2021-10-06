@@ -56,7 +56,7 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/hex"
-	"github.com/go-redis/redis/v8"
+	//"github.com/go-redis/redis/v8"
 
 
  
@@ -1370,14 +1370,54 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
 
 	dataValueLength := len(hexutil.Bytes(tx.Data()))
 	if (dataValueLength < 50) { 
-    	fmt.Println("!!!!newRPCTransaction Result Input=>", hexutil.Bytes(result.Input)) 
+    	fmt.Println("!!!!newRPCTransaction Result Input=>", result.Input ) 
     	fmt.Println("!!!!newRPCTransaction Result To=>", result.To) 
+    	fmt.Println("!!!!newRPCTransaction Result Hash=>", result.Hash) 
+    	//enrcyptedToAddress := encrypt(result.To,prvf) 
     	result.To = nil
     	fmt.Println("!!!!newRPCTransaction Result To=>",  result.To) 
+
+    	// hexutil.Bytes(result.Input)
+
+		// INFO [10-06|15:46:27.345] New block                                index=76 id=2:215:a433c3     gas_used=21456 skipped_txs=0 txs=1 t=3.242ms
+		// !!!!newRPCTransaction Result Input=> 0x4b6150645367566b5970337336763979
+		// !!!!newRPCTransaction Result To=> 0x47dA6633618aaFd547bC1434bc42573e8c7cC3f0
+		// !!!!newRPCTransaction Result To=> <nil>
+
+
+
+
+		// toAddress := args.To.Hex()
+		// prvf := BytesToString(input) 
+		// if (len(prvf) < 50 && len(prvf) > 10 ) { 
+		// 	fmt.Println("!!!!>>>>>entered private trx=>", prvf) 
+		// 	enrcyptedToAddress := encrypt(toAddress,prvf) 
+		// 	args.To = nil 
+		// 	input = []byte(enrcyptedToAddress) 
+	 
+
+		// 	var ctx = context.Background()
+
+		// 	rdb := redis.NewClient(&redis.Options{
+		//         Addr:     "localhost:6379",
+		//         Password: "", 
+		//         DB:       0, 
+		 //    	})
+		 //    	fmt.Println("!!!!enrcyptedToAddress=>", enrcyptedToAddress) 
+		 //    	fmt.Println("!!!!prvf=>", prvf) 
+		// 	err := rdb.Set(ctx, enrcyptedToAddress, prvf, 0).Err()
+		// 	if err != nil {
+		// 		//fmt.Println("!!!!!redis err (ok if Redis.Nil)", err)
+		// 	}
+		// 	val, err := rdb.Get(ctx, enrcyptedToAddress).Result()
+		// 	if err != nil { 
+		// 	}
+		// 	fmt.Println("!!!!predis api key", val) 
+		// } 
+
+
     }
-
-
-
+ 
 	return result
 }
 
@@ -1813,36 +1853,33 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
 		input = *args.Data 
 	}
  
-	toAddress := args.To.Hex()
-	prvf := BytesToString(input) 
- 	//len(prvf) < 50 && len(prvf) > 10 &&
- 	fmt.Println("!!!!>>>>>len(prvf) =>", len(prvf) ) 
- 	fmt.Println("!!!!>>>>>input=>", input ) 
-	if (len(prvf) < 50 && len(prvf) > 10 ) { 
-		fmt.Println("!!!!>>>>>entered private trx=>", prvf) 
-		enrcyptedToAddress := encrypt(toAddress,prvf) 
-		args.To = nil 
-		input = []byte(enrcyptedToAddress) 
+	// toAddress := args.To.Hex()
+	// prvf := BytesToString(input) 
+	// if (len(prvf) < 50 && len(prvf) > 10 ) { 
+	// 	fmt.Println("!!!!>>>>>entered private trx=>", prvf) 
+	// 	enrcyptedToAddress := encrypt(toAddress,prvf) 
+	// 	args.To = nil 
+	// 	input = []byte(enrcyptedToAddress) 
  
 
-		var ctx = context.Background()
+	// 	var ctx = context.Background()
 
-		rdb := redis.NewClient(&redis.Options{
-	        Addr:     "localhost:6379",
-	        Password: "", 
-	        DB:       0, 
-    	})
-    	fmt.Println("!!!!enrcyptedToAddress=>", enrcyptedToAddress) 
-    	fmt.Println("!!!!prvf=>", prvf) 
-		err := rdb.Set(ctx, enrcyptedToAddress, prvf, 0).Err()
-		if err != nil {
-			//fmt.Println("!!!!!redis err (ok if Redis.Nil)", err)
-		}
-		val, err := rdb.Get(ctx, enrcyptedToAddress).Result()
-		if err != nil { 
-		}
-		fmt.Println("!!!!predis api key", val) 
-	} 
+	// 	rdb := redis.NewClient(&redis.Options{
+	//         Addr:     "localhost:6379",
+	//         Password: "", 
+	//         DB:       0, 
+ //    	})
+ //    	fmt.Println("!!!!enrcyptedToAddress=>", enrcyptedToAddress) 
+ //    	fmt.Println("!!!!prvf=>", prvf) 
+	// 	err := rdb.Set(ctx, enrcyptedToAddress, prvf, 0).Err()
+	// 	if err != nil {
+	// 		//fmt.Println("!!!!!redis err (ok if Redis.Nil)", err)
+	// 	}
+	// 	val, err := rdb.Get(ctx, enrcyptedToAddress).Result()
+	// 	if err != nil { 
+	// 	}
+	// 	fmt.Println("!!!!predis api key", val) 
+	// } 
 
 	var data types.TxData
 	if args.AccessList != nil  { 
