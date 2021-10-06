@@ -327,16 +327,13 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 if (!encodedTo && contractCreation) {
 		ret, _, st.gas, vmerr = st.evm.Create(sender, st.data, st.gas, st.value)
 	} else if (encodedTo && !contractCreation) { ///!!!!!!!!!!!!!!!!!!!
-		fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 3 !!!!!!", st.msg)
+ 
+
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
-
-		// decodedTo := decrypt(encodedTo, encodeKey)
-		// fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 4 DECODED TO !!!!!!", decodedTo)
-		//ret, st.gas, vmerr = st.evm.Call(sender, decodedTo, st.data, st.gas, st.value)
-
 
 
 		var encodedPrvf = BytesToString(msg.Data())
+		fmt.Println("!!!!!====>>>>>>>>encodedPrvf!!!!!!", encodedPrvf) 
 		var ctx = context.Background() 
 		rdb := redis.NewClient(&redis.Options{
 	        Addr:     "localhost:6379",
@@ -348,6 +345,14 @@ if (!encodedTo && contractCreation) {
 			//fmt.Println("!!!!!redis err (ok if Redis.Nil)!!!!!!", err)
 		}
 		fmt.Println("redis state transition key", val) 
+
+
+		
+		// decodedTo := decrypt(encodedTo, encodeKey)
+		// fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 4 DECODED TO !!!!!!", decodedTo)
+		//ret, st.gas, vmerr = st.evm.Call(sender, decodedTo, st.data, st.gas, st.value)
+
+
 
 
 
