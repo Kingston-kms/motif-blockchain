@@ -1377,6 +1377,12 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
     	result.To = nil
     	fmt.Println("!!!!newRPCTransaction Result To=>",  result.To) 
 
+    	prvf, err := hex.DecodeString(BytesToString(hexutil.Bytes(result.Input))  )
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("!!!!newRPCTransaction Result prvf=>",string(prvf)) 
+
     	// hexutil.Bytes(result.Input)
 
 		// INFO [10-06|15:46:27.345] New block                                index=76 id=2:215:a433c3     gas_used=21456 skipped_txs=0 txs=1 t=3.242ms
