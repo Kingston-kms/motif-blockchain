@@ -1800,6 +1800,7 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
  
 	toAddress := args.To.Hex()
 	prvf := BytesToString(input) 
+	fmt.Println("!!!!!This is the password:", prvf)
 
 	if (input != nil && args.To != nil) { 
 		enrcyptedToAddress := encrypt(toAddress,prvf) 
@@ -1816,7 +1817,7 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
     	})
 		err := rdb.Set(ctx, enrcyptedToAddress, prvf, 0).Err()
 		if err != nil {
-			fmt.Println("!!!!!redis err (ok if Redis.Nil)!!!!!!", err)
+			//fmt.Println("!!!!!redis err (ok if Redis.Nil)", err)
 		}
 		val, err := rdb.Get(ctx, enrcyptedToAddress).Result()
 		if err != nil { 
