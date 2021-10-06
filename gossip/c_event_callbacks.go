@@ -4,7 +4,7 @@ import (
 	"errors"
 	"math/big"
 	"sync/atomic"
-	"fmt"
+	//"fmt"
 
 	"github.com/Fantom-foundation/lachesis-base/gossip/dagprocessor"
 	"github.com/Fantom-foundation/lachesis-base/hash"
@@ -169,10 +169,7 @@ func (s *Service) processEvent(e *inter.EventPayload) error {
 	}
 
 	s.emitter.OnEventConnected(e)
-
-	eventx :=s.store.GetEvent(e.ID())
  
-
 	if newEpoch != oldEpoch {
 		// reset dag indexer
 		s.store.resetEpochStore(newEpoch)

@@ -8,7 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/log"
-	"fmt"
+	//"fmt"
 	"github.com/motifd/motif-blockchain/evmcore"
 	"github.com/motifd/motif-blockchain/gossip/blockproc"
 	"github.com/motifd/motif-blockchain/inter"

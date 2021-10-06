@@ -11,7 +11,7 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/rlp"
-	"fmt"
+	//"fmt"
 	"github.com/motifd/motif-blockchain/inter"
 )
 
