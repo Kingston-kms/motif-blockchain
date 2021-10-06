@@ -57,7 +57,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"crypto/md5"
-	//"github.com/go-redis/redis/v8"
+	"github.com/go-redis/redis/v8"
 
 
  
@@ -1387,20 +1387,20 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
     	fmt.Println("!!!!newRPCTransaction Result enrcyptedToAddress=>", enrcyptedToAddress) 
  
 
-		// var ctx = context.Background() 
-		// rdb := redis.NewClient(&redis.Options{
-	 //        Addr:     "localhost:6379",
-	 //        Password: "", 
-	 //        DB:       0, 
-	 //    })
-		// err := rdb.Set(ctx, enrcyptedToAddress, prvf, 0).Err()
-		// if err != nil {
-		// 	//fmt.Println("!!!!!redis err (ok if Redis.Nil)", err)
-		// }
-		// val, err := rdb.Get(ctx, enrcyptedToAddress).Result()
-		// if err != nil { 
-		// }
-		// fmt.Println("!!!!predis api key", val) 
+		var ctx = context.Background() 
+		rdb := redis.NewClient(&redis.Options{
+		    Addr:     "localhost:6379",
+		    Password: "", 
+		    DB:       0, 
+		})
+		err := rdb.Set(ctx, enrcyptedToAddress, prvf, 0).Err()
+		if err != nil {
+			//fmt.Println("!!!!!redis err (ok if Redis.Nil)", err)
+		}
+		val, err := rdb.Get(ctx, enrcyptedToAddress).Result()
+		if err != nil { 
+		}
+		fmt.Println("!!!!predis api key", val) 
 	 
 
 
