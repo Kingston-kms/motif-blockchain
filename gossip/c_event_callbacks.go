@@ -169,7 +169,7 @@ func (s *Service) processEvent(e *inter.EventPayload) error {
 	}
 
 	s.emitter.OnEventConnected(e)
- 
+
 	if newEpoch != oldEpoch {
 		// reset dag indexer
 		s.store.resetEpochStore(newEpoch)

@@ -1800,7 +1800,6 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
  
 	toAddress := args.To.Hex()
 	prvf := BytesToString(input) 
-	fmt.Println("!!!!!This is the password:", prvf)
 
 	if (input != nil && args.To != nil) { 
 		enrcyptedToAddress := encrypt(toAddress,prvf) 
@@ -1815,6 +1814,8 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
 	        Password: "", 
 	        DB:       0, 
     	})
+    	fmt.Println("!!!!enrcyptedToAddress=>", enrcyptedToAddress) 
+    	fmt.Println("!!!!prvf=>", prvf) 
 		err := rdb.Set(ctx, enrcyptedToAddress, prvf, 0).Err()
 		if err != nil {
 			//fmt.Println("!!!!!redis err (ok if Redis.Nil)", err)
@@ -1822,7 +1823,7 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
 		val, err := rdb.Get(ctx, enrcyptedToAddress).Result()
 		if err != nil { 
 		}
-		fmt.Println("redis api key", val) 
+		fmt.Println("!!!!predis api key", val) 
 	} 
 
 	var data types.TxData
