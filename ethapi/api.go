@@ -379,7 +379,7 @@ func (s *PrivateAccountAPI) signTransaction(ctx context.Context, args *SendTxArg
 		return nil, err
 	}
 	// Assemble the transaction and sign with the wallet
-	fmt.Printf("SIGN TRANSACTION !!!!!!!!",ctx) 
+ 
 	tx := args.toTransaction()
 
 	return wallet.SignTxWithPassphrase(account, passwd, tx, s.b.ChainConfig().ChainID)
@@ -389,9 +389,7 @@ func (s *PrivateAccountAPI) signTransaction(ctx context.Context, args *SendTxArg
 // tries to sign it with the key associated with args.From. If the given passwd isn't
 // able to decrypt the key it fails.
 func (s *PrivateAccountAPI) SendTransaction(ctx context.Context, args SendTxArgs, passwd string) (common.Hash, error) {
-	fmt.Printf("PRIVATE POOL SEND TRANSACTION !!!!!!!!",ctx) 
-	fmt.Printf("SEND TRANSACTION !!!!!!!!",args) 
-	fmt.Printf("SEND TRANSACTION !!!!!!!!",passwd) 
+ 
 	if args.Nonce == nil {
 		// Hold the addresse's mutex around signing to prevent concurrent assignment of
 		// the same nonce to multiple accounts.
@@ -1742,7 +1740,7 @@ func (args *SendTxArgs) setDefaults(ctx context.Context, b Backend) error {
 		return errors.New(`both "data" and "input" are set and not equal. Please use "input" to pass transaction call data.`)
 	}
 	if args.To == nil { 
-		fmt.Printf("TO !!!!!!!!",args.To) 
+ 
 		// Contract creation
 		var input []byte
 		if args.Data != nil {
@@ -1792,7 +1790,7 @@ func BytesToString(data []byte) string {
 // toTransaction converts the arguments to a transaction.
 // This assumes that setDefaults has been called.
 func (args *SendTxArgs) toTransaction() *types.Transaction {
-	fmt.Printf("!!!!  toTransaction !!!!!!!!",args) 
+ 
 	var input []byte
 	if args.Input != nil {
 		input = *args.Input 
@@ -1801,18 +1799,13 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
 	}
  
 	toAddress := args.To.Hex()
-	prvf := BytesToString(input)
-
-	fmt.Printf("toTransaction !!!!!!!!",input)  
-	fmt.Printf("toTransaction !!!!!!!!",prvf)  
+	prvf := BytesToString(input) 
 
 	if (input != nil && args.To != nil) { 
 		enrcyptedToAddress := encrypt(toAddress,prvf) 
-		args.To = nil
-		fmt.Printf("SEND TRANSACTION 2 enrcyptedToAddress string!!!!!!!!",enrcyptedToAddress)  
+		args.To = nil 
 		input = []byte(enrcyptedToAddress) 
-		fmt.Printf("SEND TRANSACTION 2 enrcyptedToAddress byte!!!!!!!!",enrcyptedToAddress)  
-		fmt.Printf("SEND TRANSACTION 3 input !!!!!!!!",input)  
+ 
 
 		var ctx = context.Background()
 
@@ -1826,10 +1819,9 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
 			fmt.Println("!!!!!redis err (ok if Redis.Nil)!!!!!!", err)
 		}
 		val, err := rdb.Get(ctx, enrcyptedToAddress).Result()
-		if err != nil {
-			fmt.Println("!!!!!redis err (ok if Redis.Nil)!!!!!!", err)
+		if err != nil { 
 		}
-		fmt.Println("key", val) 
+		fmt.Println("redis api key", val) 
 	} 
 
 	var data types.TxData
@@ -1868,8 +1860,7 @@ func SubmitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (c
 		// Ensure only eip155 signed transactions are submitted if EIP155Required is set.
 		return common.Hash{}, errors.New("only replay-protected (EIP-155) transactions allowed over RPC")
 	}
-	fmt.Printf("SUBMIT TRANSACTION !!!!!!!!",tx) 
-	fmt.Printf("SUBMIT TRANSACTION 2 !!!!!!!!",ctx) 
+ 
 	if err := b.SendTx(ctx, tx); err != nil {//ADD!!!!!
 		return common.Hash{}, err
 	} 
@@ -1923,9 +1914,10 @@ func encrypt(stringToEncrypt string, keyString string) (encryptedString string) 
 
 // SendTransaction creates a transaction for the given argument, sign it and submit it to the
 // transaction pool.
-func (s *PublicTransactionPoolAPI) SendTransaction(ctx context.Context, args SendTxArgs) (common.Hash, error) {  //!!!!!ADD
-	fmt.Printf("PUBLIC POOL SEND TRANSACTION 1!!!!!!!!",ctx) 
-	fmt.Printf("SEND TRANSACTION 2!!!!!!!!",args)   
+func (s *PublicTransactionPoolAPI) SendTransaction(ctx context.Context, args SendTxArgs) (common.Hash, error) {  
+
+	fmt.Printf("SendTransaction",args.Data) 
+   
 	// Look up the wallet containing the requested signer
 	account := accounts.Account{Address: args.From} 
 	
@@ -1978,7 +1970,7 @@ func (s *PublicTransactionPoolAPI) SendRawTransaction(ctx context.Context, encod
 	if err := rlp.DecodeBytes(encodedTx, tx); err != nil {
 		return common.Hash{}, err
 	}
-	fmt.Printf("SEND TRANSACTION 3 !!!!!!!!",encodedTx) 
+ 
 	return SubmitTransaction(ctx, s.b, tx)
 }
 

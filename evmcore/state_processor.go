@@ -67,27 +67,25 @@ func (p *StateProcessor) Process(
 		blockContext = NewEVMBlockContext(header, p.bc, nil)
 		vmenv        = vm.NewEVM(blockContext, vm.TxContext{}, statedb, p.config, cfg)
 	)
-	fmt.Printf("!!!!PROCESSING TRANSACTIONS!!!!!!HERE IS THE KEY PART!!!!",block.Transactions)  
+ 
 	// Iterate over and process the individual transactions
 	for i, tx := range block.Transactions {
 		var msg types.Message
 		if !internal {
-			fmt.Printf("==>NEW MESSAGE NON INTERNAL TO!!!", tx.To()) 
-			fmt.Printf("==>NEW MESSAGE NON INTERNAL DATA!!!", hexutil.Bytes(tx.Data()))  
+ 
 			msg, err = tx.AsMessage(types.MakeSigner(p.config, header.Number))
 			if err != nil {
 				return nil, nil, nil, err
 			}
 		} else {
-			fmt.Printf("==>NEW MESSAGE INTERNAL TO!!!", tx.To()) 
-			fmt.Printf("==>NEW MESSAGE INTERNAL DATA!!!", tx.Data())  
+	  
 			msg = types.NewMessage(common.Address{}, tx.To(), tx.Nonce(), tx.Value(), tx.Gas(), tx.GasPrice(), tx.Data(), tx.AccessList(), false)
 		}
 
 		
 
 		statedb.Prepare(tx.Hash(), block.Hash, i)
-		fmt.Printf("==>apply TRANSACTION!!!", msg)  
+		 
 		receipt, _, skip, err = applyTransaction(msg, p.config, gp, statedb, block.Header(), tx, usedGas, vmenv, onNewLog)
 		if skip {
 			skipped = append(skipped, uint32(i))
@@ -137,10 +135,10 @@ func applyTransaction(
 	// Update the state with pending changes.
 	var root []byte
 	if config.IsByzantium(header.Number) {
-		fmt.Printf("==>!!!!statedb.Finalise Byzantium !!!",header.Number)  
+	  
 		statedb.Finalise(true)
 	} else {
-		fmt.Printf("==>!!!!statedb.Finalise nonByzantium !!!",header.Number) 
+		 
 		root = statedb.IntermediateRoot(config.IsEIP158(header.Number)).Bytes()
 	}
 	*usedGas += result.UsedGas
@@ -155,14 +153,11 @@ func applyTransaction(
 	} else {
 		receipt.Status = types.ReceiptStatusSuccessful
 	}
-	fmt.Printf("==>!!!!things happen here tx.Hash() !!!",tx.Hash() )  
-	receipt.TxHash = tx.Hash() ///!!!! 
+   
+	receipt.TxHash = tx.Hash()  
 	receipt.GasUsed = result.UsedGas
 
-
-	fmt.Printf("==>!!!!TRANSACTION TO DOES NOT CREATE CONTRACT!!! 1", evm.TxContext)  
-	fmt.Printf("==>!!!!TRANSACTION TO DOES NOT CREATE CONTRACT!!! 2", msg)  
-	fmt.Printf("==>!!!!TRANSACTION TO DOES NOT CREATE CONTRACT!!! 3", tx)  
+ 
 	// If the transaction created a contract, store the creation address in the receipt.
 	if msg.To() == nil {
 		receipt.ContractAddress = crypto.CreateAddress(evm.TxContext.Origin, tx.Nonce())

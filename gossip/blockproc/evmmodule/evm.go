@@ -74,9 +74,7 @@ func (p *MotifEVMProcessor) Execute(txs types.Transactions, internal bool) types
 	evmProcessor := evmcore.NewStateProcessor(p.net.EvmChainConfig(), p.reader)
 
 	// Process txs
-	evmBlock := p.evmBlockWith(txs)
-	fmt.Println("======>!!!!!!!!evmProcessor.Process",evmBlock) 
-	fmt.Println("======>!!!!!!!!evmProcessor.Process",internal)  
+	evmBlock := p.evmBlockWith(txs) 
 	receipts, _, skipped, err := evmProcessor.Process(evmBlock, p.statedb, motif.DefaultVMConfig, &p.gasUsed, internal, func(log *types.Log, _ *state.StateDB) {
 		p.onNewLog(log)
 	})
@@ -103,7 +101,6 @@ func (p *MotifEVMProcessor) Finalize() (evmBlock *evmcore.EvmBlock, skippedTxs [
 		// Filter skipped transactions. Receipts are filtered already
 		inter.FilterSkippedTxs(p.incomingTxs, p.skippedTxs),
 	)
-	fmt.Println("======>!!!!!!!!evmProcessor.Finalize",evmBlock) 
 	// Get state root
 	newStateHash, err := p.statedb.Commit(true)
 	if err != nil {

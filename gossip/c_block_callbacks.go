@@ -175,7 +175,7 @@ func consensusCallbackBeginBlockFn(
 				blockFn := func() {
 					// Execute post-internal transactions
 					internalTxs := blockProc.PostTxTransactor.PopInternalTxs(blockCtx, bs, es, sealing, statedb)
-					fmt.Println("======>!!!!!!!!CBLOCK CALLBSCKS evmProcessor.Execute 279",internalTxs)  
+			  
 					internalReceipts := evmProcessor.Execute(internalTxs, true)
 					for _, r := range internalReceipts {
 						if r.Status == 0 {
@@ -201,10 +201,8 @@ func consensusCallbackBeginBlockFn(
 					for _, e := range blockEvents {
 						txs = append(txs, e.Txs()...)
 					}
-					fmt.Println("======>!!!!!!!!CBLOCK CALLBSCKS EXECUTE EXTERNAL 1",txs)  
-					externalReceipts := evmProcessor.Execute(txs, false)
-					fmt.Println("======>!!!!!!!!CBLOCK CALLBSCKS EXECUTE EXTERNAL 2",txs)  
-					fmt.Println("======>!!!!!!!!EXECUTED EXTERNAL RECEIPTS",externalReceipts)  
+					 
+					externalReceipts := evmProcessor.Execute(txs, false) 
 					evmBlock, skippedTxs, allReceipts := evmProcessor.Finalize()
 
 					block.SkippedTxs = skippedTxs
@@ -291,7 +289,7 @@ func consensusCallbackBeginBlockFn(
 					if onBlockEnd != nil {
 						onBlockEnd(block, preInternalReceipts, internalReceipts, externalReceipts)
 					}
-					fmt.Println("======>!!!!!!!!COMMIT EVM!!!!!",evmBlock.Transactions) 
+		 
 					store.commitEVM() 
 
 					log.Info("New block", "index", blockCtx.Idx, "id", block.Atropos, "gas_used",

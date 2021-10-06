@@ -32,13 +32,6 @@ func (s *Store) DelEvent(id hash.Event) {
 // SetEvent stores event.
 func (s *Store) SetEvent(e *inter.EventPayload) {
 	key := e.ID().Bytes()
-	fmt.Println("======>!!!!!!!!SetEvent table events 1!!!!!!!!",s.table.Events)
-	fmt.Println("======>!!!!!!!!SetEvent table events 2!!!!!!!!",e) 
-
-	fmt.Println("======>!!!!!!!!SetEvent table events 3!!!!!!!!",key) 
-
-
-	
 
 	s.rlp.Set(s.table.Events, key, e)
 
