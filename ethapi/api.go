@@ -1331,8 +1331,13 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
 	// signer, because we assume that signers are backwards-compatible with old
 	// transactions. For non-protected transactions, the homestead signer signer is used
 	// because the return value of ChainId is zero for those transactions.
-	fmt.Println("!!!!newRPCTransaction=>", tx)  
-	
+
+
+	if (tx.Data != nil && tx.To != nil) { 
+    	fmt.Println("!!!!newRPCTransaction=>", hexutil.Bytes(tx.Data()) ) 
+    }
+
+
 	var signer types.Signer
 	if tx.Protected() {
 		signer = gsignercache.Wrap(types.LatestSignerForChainID(tx.ChainId()))
