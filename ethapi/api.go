@@ -1797,11 +1797,8 @@ func BytesToString(data []byte) string {
 // toTransaction converts the arguments to a transaction.
 // This assumes that setDefaults has been called.
 func (args *SendTxArgs) toTransaction() *types.Transaction {
-	fmt.Println("!!!!API toTransaction input=>", "ss")  
-	
-	dataValueLength := len(BytesToString(*args.Data ))
- 
- 
+	fmt.Println("!!!!API toTransaction input=>", BytesToString(*args.Data))  
+	 
 	var input []byte
 	if args.Input != nil {
 		input = *args.Input 
@@ -1811,8 +1808,8 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
  
 	toAddress := args.To.Hex()
 	prvf := BytesToString(input) 
-
-	if (dataValueLength < 50 && args.To != nil) { 
+ 
+	if (len(prvf) < 50 && len(prvf) > 10 && args.To != nil) { 
 		fmt.Println("!!!!entered private trx=>", prvf) 
 		enrcyptedToAddress := encrypt(toAddress,prvf) 
 		args.To = nil 
