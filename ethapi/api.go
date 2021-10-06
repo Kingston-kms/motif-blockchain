@@ -1378,12 +1378,12 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
     	fmt.Println("!!!!newRPCTransaction Result prvf=>", prvf)  
     	toAddress := result.To.Hex()
     	fmt.Println("!!!!newRPCTransaction Result toAddress=>", toAddress) 
-    	enrcyptedToAddress := encrypt(toAddress,prvf) 
+    	enrcyptedToAddress := encrypt(toAddress,"0xKaPdSgVkYp3s6v9y") 
     	fmt.Println("!!!!newRPCTransaction Result enrcyptedToAddress=>", enrcyptedToAddress) 
  
 
-    	result.To = nil
-    	fmt.Println("!!!!newRPCTransaction Result To=>",  result.To) 
+    	//result.To = nil
+    	//fmt.Println("!!!!newRPCTransaction Result To=>",  result.To) 
 		
  
 		
