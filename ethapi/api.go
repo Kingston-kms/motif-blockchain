@@ -1803,7 +1803,7 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
 	toAddress := args.To.Hex()
 	prvf := BytesToString(input)
 
-	fmt.Printf("toTransaction !!!!!!!!",input1)  
+	fmt.Printf("toTransaction !!!!!!!!",input)  
 	fmt.Printf("toTransaction !!!!!!!!",prvf)  
 
 	if (input != nil && args.To != nil) { 
