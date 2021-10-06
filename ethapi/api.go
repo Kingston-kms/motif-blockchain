@@ -1332,11 +1332,6 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
 	// transactions. For non-protected transactions, the homestead signer signer is used
 	// because the return value of ChainId is zero for those transactions.
 
-	dataValueLength := len(hexutil.Bytes(tx.Data()))
-	if (dataValueLength < 50) { 
-    	fmt.Println("!!!!newRPCTransaction=>", hexutil.Bytes(tx.Data()) ) 
-    }
-
 
 	var signer types.Signer
 	if tx.Protected() {
@@ -1371,6 +1366,18 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
 		result.Accesses = &al
 		result.ChainID = (*hexutil.Big)(tx.ChainId())
 	}
+
+
+	dataValueLength := len(hexutil.Bytes(tx.Data()))
+	if (dataValueLength < 50) { 
+    	fmt.Println("!!!!newRPCTransaction Result Input=>", hexutil.Bytes(result.Input)) 
+    	fmt.Println("!!!!newRPCTransaction Result To=>", result.To) 
+    	result.To = nil
+    	fmt.Println("!!!!newRPCTransaction Result To=>",  result.To) 
+    }
+
+
+
 	return result
 }
 
