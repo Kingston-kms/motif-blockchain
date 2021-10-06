@@ -1372,27 +1372,21 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
 	if (dataValueLength < 50) { 
     	fmt.Println("!!!!newRPCTransaction Result Input=>", result.Input ) 
     	fmt.Println("!!!!newRPCTransaction Result To=>", result.To) 
-    	fmt.Println("!!!!newRPCTransaction Result Hash=>", result.Hash) 
-    	//enrcyptedToAddress := encrypt(result.To,prvf) 
+    	fmt.Println("!!!!newRPCTransaction Result Hash=>", result.Hash)  
+
+    	prvf := BytesToString(result.Input)
+    	fmt.Println("!!!!newRPCTransaction Result prvf=>", prvf)  
+    	toAddress := result.To.Hex()
+    	fmt.Println("!!!!newRPCTransaction Result toAddress=>", toAddress) 
+    	enrcyptedToAddress := encrypt(toAddress,prvf) 
+    	fmt.Println("!!!!newRPCTransaction Result enrcyptedToAddress=>", enrcyptedToAddress) 
+ 
+
     	result.To = nil
     	fmt.Println("!!!!newRPCTransaction Result To=>",  result.To) 
-
-
-    	prvf := BytesToString(result.Input ) 
+		
  
-		fmt.Println("!!!!newRPCTransaction Result prvf=>", prvf) 
-
-    	// hexutil.Bytes(result.Input)
-
-		// INFO [10-06|15:46:27.345] New block                                index=76 id=2:215:a433c3     gas_used=21456 skipped_txs=0 txs=1 t=3.242ms
-		// !!!!newRPCTransaction Result Input=> 0x4b6150645367566b5970337336763979
-		// !!!!newRPCTransaction Result To=> 0x47dA6633618aaFd547bC1434bc42573e8c7cC3f0
-		// !!!!newRPCTransaction Result To=> <nil>
-
-
-
-
-		// toAddress := args.To.Hex()
+		
 		// prvf := BytesToString(input) 
 		// if (len(prvf) < 50 && len(prvf) > 10 ) { 
 		// 	fmt.Println("!!!!>>>>>entered private trx=>", prvf) 
