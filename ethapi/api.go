@@ -402,6 +402,7 @@ func (s *PrivateAccountAPI) SendTransaction(ctx context.Context, args SendTxArgs
 		log.Warn("Failed transaction send attempt", "from", args.From, "to", args.To, "value", args.Value.ToInt(), "err", err)
 		return common.Hash{}, err
 	} 
+	fmt.Println("!!!!SubmitTransaction 2", result.Hash)  
 	return SubmitTransaction(ctx, s.b, signed)
 }
 
@@ -1408,8 +1409,6 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
 
  		fmt.Println("!!!!newRPCTransaction Result Input NEW=>",  result.Input) 
     	fmt.Println("!!!!newRPCTransaction Result To NEW=>",  result.To) 
-		
-
     }
  
 	return result
@@ -2038,6 +2037,7 @@ func (s *PublicTransactionPoolAPI) SendTransaction(ctx context.Context, args Sen
 	if err != nil {
 		return common.Hash{}, err
 	} 
+	fmt.Println("!!!!SubmitTransaction 1", result.Hash)  
 	return SubmitTransaction(ctx, s.b, signed)
 }
 
@@ -2064,7 +2064,7 @@ func (s *PublicTransactionPoolAPI) SendRawTransaction(ctx context.Context, encod
 	if err := rlp.DecodeBytes(encodedTx, tx); err != nil {
 		return common.Hash{}, err
 	}
- 
+ 	fmt.Println("!!!!SubmitTransaction 3", result.Hash)  
 	return SubmitTransaction(ctx, s.b, tx)
 }
 
