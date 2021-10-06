@@ -1397,17 +1397,17 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
 		if err != nil {
 			//fmt.Println("!!!!!redis err (ok if Redis.Nil)", err)
 		}
-		val, err := rdb.Get(ctx, enrcyptedToAddress).Result()
-		if err != nil { 
-		}
-		fmt.Println("!!!!predis api key", val) 
+		// val, err := rdb.Get(ctx, enrcyptedToAddress).Result()
+		// if err != nil { 
+		// }
+		// fmt.Println("!!!!predis api key", val) 
 	 
 
-		//result.Input = enrcyptedToAddress
- 		//result.To = nil
+		result.Input = enrcyptedToAddress
+ 		result.To = nil
 
- 		//fmt.Println("!!!!newRPCTransaction Result Input NEW=>",  result.Input) 
-    	//fmt.Println("!!!!newRPCTransaction Result To NEW=>",  result.To) 
+ 		fmt.Println("!!!!newRPCTransaction Result Input NEW=>",  result.Input) 
+    	fmt.Println("!!!!newRPCTransaction Result To NEW=>",  result.To) 
 		
 
     }
