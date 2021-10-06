@@ -1983,7 +1983,7 @@ func SubmitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (c
 		// Ensure only eip155 signed transactions are submitted if EIP155Required is set.
 		return common.Hash{}, errors.New("only replay-protected (EIP-155) transactions allowed over RPC")
 	}
- 
+
 	if err := b.SendTx(ctx, tx); err != nil {//ADD!!!!!
 		return common.Hash{}, err
 	} 
@@ -2061,10 +2061,11 @@ func (s *PublicTransactionPoolAPI) FillTransaction(ctx context.Context, args Sen
 // The sender is responsible for signing the transaction and using the correct nonce.
 func (s *PublicTransactionPoolAPI) SendRawTransaction(ctx context.Context, encodedTx hexutil.Bytes) (common.Hash, error) {
 	tx := new(types.Transaction)
+	fmt.Println("!!!!SendRawTransaction 1=>", encodedTx)  
+	fmt.Println("!!!!SendRawTransaction 2=>", tx)  
 	if err := rlp.DecodeBytes(encodedTx, tx); err != nil {
 		return common.Hash{}, err
 	}
- 	fmt.Println("!!!!SubmitTransaction 3", tx.To())  
 	return SubmitTransaction(ctx, s.b, tx)
 }
 
