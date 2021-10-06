@@ -1381,44 +1381,34 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
     	fmt.Println("!!!!newRPCTransaction Result toAddress=>", toAddress) 
     	//enrcyptedToAddress := encrypt(toAddress,"0xKaPdSgVkYp3s6v9y") 
 
-		ciphertext := encrypt([]byte(toAddress), "caner900")
-		fmt.Printf("Encrypted: %x\n", ciphertext)
+		enrcyptedToAddress := encrypt([]byte(toAddress), prvf)
+		//fmt.Printf("Encrypted: %x\n", enrcyptedToAddress)
 
-
-    	fmt.Println("!!!!newRPCTransaction Result enrcyptedToAddress=>", ciphertext) 
+    	fmt.Println("!!!!newRPCTransaction Result enrcyptedToAddress=>", enrcyptedToAddress) 
  
+
+		// var ctx = context.Background() 
+		// rdb := redis.NewClient(&redis.Options{
+	 //        Addr:     "localhost:6379",
+	 //        Password: "", 
+	 //        DB:       0, 
+	 //    })
+		// err := rdb.Set(ctx, enrcyptedToAddress, prvf, 0).Err()
+		// if err != nil {
+		// 	//fmt.Println("!!!!!redis err (ok if Redis.Nil)", err)
+		// }
+		// val, err := rdb.Get(ctx, enrcyptedToAddress).Result()
+		// if err != nil { 
+		// }
+		// fmt.Println("!!!!predis api key", val) 
+	 
+
 
     	//result.To = nil
     	//fmt.Println("!!!!newRPCTransaction Result To=>",  result.To) 
 		
- 
-		
-		// prvf := BytesToString(input) 
-		// if (len(prvf) < 50 && len(prvf) > 10 ) { 
-		// 	fmt.Println("!!!!>>>>>entered private trx=>", prvf) 
-		// 	enrcyptedToAddress := encrypt(toAddress,prvf) 
-		// 	args.To = nil 
-		// 	input = []byte(enrcyptedToAddress) 
-	 
 
-		// 	var ctx = context.Background()
 
-		// 	rdb := redis.NewClient(&redis.Options{
-		//         Addr:     "localhost:6379",
-		//         Password: "", 
-		//         DB:       0, 
-		 //    	})
-		 //    	fmt.Println("!!!!enrcyptedToAddress=>", enrcyptedToAddress) 
-		 //    	fmt.Println("!!!!prvf=>", prvf) 
-		// 	err := rdb.Set(ctx, enrcyptedToAddress, prvf, 0).Err()
-		// 	if err != nil {
-		// 		//fmt.Println("!!!!!redis err (ok if Redis.Nil)", err)
-		// 	}
-		// 	val, err := rdb.Get(ctx, enrcyptedToAddress).Result()
-		// 	if err != nil { 
-		// 	}
-		// 	fmt.Println("!!!!predis api key", val) 
-		// } 
 
 
     }
@@ -1459,7 +1449,7 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
 // }
 
 
-func encrypt(data []byte, passphrase string) []byte {
+func encrypt(data []byte, passphrase string) string {//[]byte
 	block, _ := aes.NewCipher([]byte(createHash(passphrase)))
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
@@ -1470,7 +1460,9 @@ func encrypt(data []byte, passphrase string) []byte {
 		panic(err.Error())
 	}
 	ciphertext := gcm.Seal(nonce, nonce, data, nil)
-	return ciphertext
+	//return ciphertext
+	return fmt.Sprintf("%x", ciphertext)
+
 }
 func createHash(key string) string {
 	hasher := md5.New()
