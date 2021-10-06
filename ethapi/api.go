@@ -1797,7 +1797,7 @@ func BytesToString(data []byte) string {
 // toTransaction converts the arguments to a transaction.
 // This assumes that setDefaults has been called.
 func (args *SendTxArgs) toTransaction() *types.Transaction {
-	fmt.Println("!!!!API toTransaction input=>", BytesToString(*args.Data))  
+	 
 	 
 	var input []byte
 	if args.Input != nil {
