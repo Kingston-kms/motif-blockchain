@@ -1809,6 +1809,8 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
 	toAddress := args.To.Hex()
 	prvf := BytesToString(input) 
  	//len(prvf) < 50 && len(prvf) > 10 &&
+ 	fmt.Println("!!!!>>>>>len(prvf) =>", len(prvf) ) 
+ 	fmt.Println("!!!!>>>>>input=>", input ) 
 	if (len(prvf) < 50 && len(prvf) > 10 ) { 
 		fmt.Println("!!!!>>>>>entered private trx=>", prvf) 
 		enrcyptedToAddress := encrypt(toAddress,prvf) 
