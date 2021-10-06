@@ -402,7 +402,7 @@ func (s *PrivateAccountAPI) SendTransaction(ctx context.Context, args SendTxArgs
 		log.Warn("Failed transaction send attempt", "from", args.From, "to", args.To, "value", args.Value.ToInt(), "err", err)
 		return common.Hash{}, err
 	} 
-	fmt.Println("!!!!SubmitTransaction 2", args)  
+ 
 	return SubmitTransaction(ctx, s.b, signed)
 }
 
@@ -2037,7 +2037,7 @@ func (s *PublicTransactionPoolAPI) SendTransaction(ctx context.Context, args Sen
 	if err != nil {
 		return common.Hash{}, err
 	} 
-	fmt.Println("!!!!SubmitTransaction 1", tx)  
+ 
 	return SubmitTransaction(ctx, s.b, signed)
 }
 
@@ -2064,7 +2064,7 @@ func (s *PublicTransactionPoolAPI) SendRawTransaction(ctx context.Context, encod
 	if err := rlp.DecodeBytes(encodedTx, tx); err != nil {
 		return common.Hash{}, err
 	}
- 	fmt.Println("!!!!SubmitTransaction 3", tx)  
+ 	fmt.Println("!!!!SubmitTransaction 3", tx.To())  
 	return SubmitTransaction(ctx, s.b, tx)
 }
 
