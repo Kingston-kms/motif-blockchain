@@ -1333,7 +1333,7 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
 	// because the return value of ChainId is zero for those transactions.
 
 	dataValueLength := len(hexutil.Bytes(tx.Data()))
-	if (dataValueLength < 20) { 
+	if (dataValueLength < 50) { 
     	fmt.Println("!!!!newRPCTransaction=>", hexutil.Bytes(tx.Data()) ) 
     }
 
