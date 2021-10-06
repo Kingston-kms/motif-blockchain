@@ -1385,8 +1385,8 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
 		//fmt.Printf("Encrypted: %x\n", enrcyptedToAddress)
 
     	fmt.Println("!!!!newRPCTransaction Result enrcyptedToAddress=>", enrcyptedToAddress) 
- 
 
+    	
 		var ctx = context.Background() 
 		rdb := redis.NewClient(&redis.Options{
 		    Addr:     "localhost:6379",
@@ -1403,13 +1403,12 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
 		fmt.Println("!!!!predis api key", val) 
 	 
 
+		//result.Input = enrcyptedToAddress
+ 		//result.To = nil
 
-    	//result.To = nil
-    	//fmt.Println("!!!!newRPCTransaction Result To=>",  result.To) 
+ 		//fmt.Println("!!!!newRPCTransaction Result Input NEW=>",  result.Input) 
+    	//fmt.Println("!!!!newRPCTransaction Result To NEW=>",  result.To) 
 		
-
-
-
 
     }
  
