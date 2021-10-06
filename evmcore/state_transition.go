@@ -344,9 +344,9 @@ if (!encodedTo && contractCreation) {
 	        DB:       0, 
     	})
 		val, err := rdb.Get(ctx, encodedPrvf).Result()
-		// if err != nil {
-		// 	panic(err)
-		// }
+		if err != nil {
+			fmt.Println("!!!!!redis err (ok if Redis.Nil)!!!!!!", err)
+		}
 		fmt.Println("key", val) 
 
 

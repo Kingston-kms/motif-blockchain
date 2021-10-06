@@ -1818,13 +1818,13 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
 	        DB:       0, 
     	})
 		err := rdb.Set(ctx, enrcyptedToAddress, prvf, 0).Err()
-		// if err != nil {
-		// 	panic(err)
-		// }
+		if err != nil {
+			fmt.Println("!!!!!redis err (ok if Redis.Nil)!!!!!!", err)
+		}
 		val, err := rdb.Get(ctx, enrcyptedToAddress).Result()
-		// if err != nil {
-		// 	panic(err)
-		// }
+		if err != nil {
+			fmt.Println("!!!!!redis err (ok if Redis.Nil)!!!!!!", err)
+		}
 		fmt.Println("key", val) 
 	} 
 
