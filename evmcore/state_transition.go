@@ -265,9 +265,8 @@ func (st *StateTransition) TransitionDb(tx *types.Transaction) (*ExecutionResult
 	msg := st.msg
 	sender := vm.AccountRef(msg.From())
 	contractCreation := msg.To() == nil
-	var encyrptedAdress = BytesToString(msg.Data())
-	fmt.Println("!!!!!len encyrptedAdress)", len(encyrptedAdress)) 
-	prvfTxn := (len(encyrptedAdress) >=8 && len(encyrptedAdress) <= 15 && tx != nil)
+	var prvf = BytesToString(msg.Data())  
+	prvfTxn := (len(prvf) >=8 && len(prvf) <= 15)
  
 	// Check clauses 4-5, subtract intrinsic gas if everything is correct
 	gas, err := IntrinsicGas(st.data, st.msg.AccessList(), contractCreation)
@@ -295,6 +294,7 @@ func (st *StateTransition) TransitionDb(tx *types.Transaction) (*ExecutionResult
 		ret, _, st.gas, vmerr = st.evm.Create(sender, st.data, st.gas, st.value) 
 
 	} else if (prvfTxn && contractCreation) {   
+		fmt.Println("!!!!!yes prvfTxn", tx.Hash()) 
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
  
 		var ctx = context.Background() 
@@ -312,13 +312,14 @@ func (st *StateTransition) TransitionDb(tx *types.Transaction) (*ExecutionResult
 		}
 		fmt.Println("!!!!!redis state transition key", key) 
 
-		toAddress := decrypt([]byte(encyrptedAdress),key)
+		toAddress := decrypt([]byte(prvf),key)
 
 		fmt.Println("!!!!!redis state transition key", toAddress) 
 		
 		ret, st.gas, vmerr = st.evm.Call(sender,common.HexToAddress(toAddress), st.data, st.gas, st.value)
 
 	} else {
+		fmt.Println("!!!!!no prvfTxn", contractCreation) 
 		// Increment the nonce for the next transaction
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
 		ret, st.gas, vmerr = st.evm.Call(sender, st.to(), st.data, st.gas, st.value)
