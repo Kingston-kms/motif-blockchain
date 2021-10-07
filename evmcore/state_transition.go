@@ -322,7 +322,7 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 		}
 		fmt.Println("!!!!!redis state transition password", val) 
 
-		toAddress := decrypt([]byte(enrcyptedToAddressString.Hex()),"caner900")
+		toAddress := "0xaA8fd721FF88E9862f173e824C6bc6BF0De90EB6"   //decrypt([]byte(enrcyptedToAddressString.Hex()),"caner900")
 
 		fmt.Println("!!!!!redis state transition 2", toAddress) 
 		
