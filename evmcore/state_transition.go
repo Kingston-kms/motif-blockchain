@@ -271,16 +271,13 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	enrcyptedToAddress := hexutils.BytesToHex(msg.Data())  //  BytesToString(msg.Data())  
 
 	enrcyptedToAddressString, err := hex.DecodeString(enrcyptedToAddress)
-	if err != nil {
-		panic(err)
-	} 
+ 
 
+	fmt.Println("!!!!!enrcyptedToAddress itself 1!!!!!",enrcyptedToAddress )  //
+	fmt.Println("!!!!!enrcyptedToAddress itself 2!!!!!", string(enrcyptedToAddressString))  //
+	fmt.Println("!!!!!enrcyptedToAddress len!!!!!", len(enrcyptedToAddress))  
 
-
-	fmt.Println("!!!!!enrcyptedToAddress itself!!!!!", string(enrcyptedToAddressString))  //
-	fmt.Println("!!!!!enrcyptedToAddress len!!!!!", string(enrcyptedToAddressString))  
-
-	prvfTxn := (len(string(enrcyptedToAddressString)) ==140)
+	prvfTxn := (len(enrcyptedToAddress) ==140)
  
 	// Check clauses 4-5, subtract intrinsic gas if everything is correct
 	gas, err := IntrinsicGas(st.data, st.msg.AccessList(), contractCreation)
@@ -319,13 +316,13 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	        DB:       0, 
     })
 
-    val, err := rdb.Get(ctx,string(enrcyptedToAddressString)).Result() 
+    val, err := rdb.Get(ctx, string(enrcyptedToAddressString)).Result() 
 		if err != nil {
 			//fmt.Println("!!!!!redis err (ok if Redis.Nil)!!!!!!", err)
 		}
 		fmt.Println("!!!!!redis state transition password", val) 
 
-		toAddress := decrypt([]byte(string(enrcyptedToAddressString)),val)
+		toAddress := decrypt([]byte(enrcyptedToAddressString),val)
 
 		fmt.Println("!!!!!redis state transition 2", toAddress) 
 		
