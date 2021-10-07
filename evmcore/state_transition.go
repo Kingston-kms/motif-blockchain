@@ -19,18 +19,22 @@ package evmcore
 import (
 	"fmt"
 	"math"
+ 
 	"context"
 	"math/big"
-	"crypto/aes"
-	"crypto/cipher"
 	"encoding/hex"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/ethereum/go-ethereum/params"  
+
+	"crypto/aes"
+	"crypto/cipher" 
+	"crypto/md5"
 	"github.com/go-redis/redis/v8"
-	"github.com/ethereum/go-ethereum/common/hexutil"
+
+
 )
 
 /*
@@ -170,8 +174,8 @@ func NewStateTransition(evm *vm.EVM, msg Message, gp *GasPool) *StateTransition 
 // the gas used (which includes gas refunds) and an error if it failed. An error always
 // indicates a core error meaning that the message would always fail for that particular
 // state and would never be accepted within a block.
-func ApplyMessage(evm *vm.EVM, msg Message, gp *GasPool) (*ExecutionResult, error) {
-	res, err := NewStateTransition(evm, msg, gp).TransitionDb()
+func ApplyMessage(evm *vm.EVM, msg Message, gp *GasPool, tx *types.Transaction) (*ExecutionResult, error) {
+	res, err := NewStateTransition(evm, msg, gp).TransitionDb(tx)
 	if err != nil {
 		log.Debug("Tx skipped", "err", err)
 	}
@@ -226,38 +230,7 @@ func (st *StateTransition) internal() bool {
 	zeroAddr := common.Address{}
 	return st.msg.From() == zeroAddr
 }
-
-func decrypt(encryptedString string, keyString string) (decryptedString string) {
-
-	key, _ := hex.DecodeString(keyString)
-	enc, _ := hex.DecodeString(encryptedString)
-
-	//Create a new Cipher Block from the key
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	//Create a new GCM
-	aesGCM, err := cipher.NewGCM(block)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	//Get the nonce size
-	nonceSize := aesGCM.NonceSize()
-
-	//Extract the nonce from the encrypted data
-	nonce, ciphertext := enc[:nonceSize], enc[nonceSize:]
-
-	//Decrypt the data
-	plaintext, err := aesGCM.Open(nil, nonce, ciphertext, nil)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return fmt.Sprintf("%s", plaintext)
-}
+ 
 
 // TransitionDb will transition the state by applying the current message and
 // returning the evm execution result with following fields.
@@ -272,7 +245,7 @@ func decrypt(encryptedString string, keyString string) (decryptedString string) 
 //
 // However if any consensus issue encountered, return the error directly with
 // nil evm execution result.
-func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
+func (st *StateTransition) TransitionDb(tx *types.Transaction) (*ExecutionResult, error) {
 	// First check this message satisfies all consensus rules before
 	// applying the message. The rules include these clauses
 	//
@@ -292,8 +265,10 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	msg := st.msg
 	sender := vm.AccountRef(msg.From())
 	contractCreation := msg.To() == nil
-	encodedTo := hexutil.Bytes(msg.Data()) != nil//ADDED!!!!!!!
-	  
+	var encyrptedAdress = BytesToString(msg.Data())
+	fmt.Println("!!!!!len encyrptedAdress)", len(encyrptedAdress)) 
+	prvfTxn := (len(encyrptedAdress) == 140 && tx != nil)
+ 
 	// Check clauses 4-5, subtract intrinsic gas if everything is correct
 	gas, err := IntrinsicGas(st.data, st.msg.AccessList(), contractCreation)
 	if err != nil {
@@ -313,64 +288,42 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 		ret   []byte
 		vmerr error // vm errors do not effect consensus and are therefore not assigned to err
 	)
-
-
-	// if contractCreation {
-	// 	ret, _, st.gas, vmerr = st.evm.Create(sender, st.data, st.gas, st.value)
-	// } else {
-	// 	// Increment the nonce for the next transaction
-	// 	st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
-	// 	ret, st.gas, vmerr = st.evm.Call(sender, st.to(), st.data, st.gas, st.value)
-	// }//DELETED!!!!!!!!!!!!
-
-
-if (!encodedTo && contractCreation) {
-		ret, _, st.gas, vmerr = st.evm.Create(sender, st.data, st.gas, st.value)
-	} else if (encodedTo && !contractCreation) { ///!!!!!!!!!!!!!!!!!!!
  
 
-		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
-
-
-		var encodedPrvf = BytesToString(msg.Data())
-		if (len(encodedPrvf) > 5 && len(encodedPrvf) < 50) {
-			//fmt.Println("!!!!!====>>>>>>>>encodedPrvf!!!!!!", encodedPrvf) 
-		}
+	if (!prvfTxn && contractCreation) {
 		
+		ret, _, st.gas, vmerr = st.evm.Create(sender, st.data, st.gas, st.value) 
+
+	} else if (prvfTxn && contractCreation) {   
+		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
+ 
 		var ctx = context.Background() 
 		rdb := redis.NewClient(&redis.Options{
 	        Addr:     "localhost:6379",
 	        Password: "", 
 	        DB:       0, 
-    	})
-		val, err := rdb.Get(ctx, encodedPrvf).Result()
+    })
+
+    	fmt.Println("!!!!!tx.hash", tx.Hash()) 
+
+		key, err := rdb.Get(ctx, tx.Hash().Hex()).Result()
 		if err != nil {
 			//fmt.Println("!!!!!redis err (ok if Redis.Nil)!!!!!!", err)
 		}
-		if (len(val) > 5) {
-			fmt.Println("redis state transition key", val) 
-		}
+		fmt.Println("!!!!!redis state transition key", key) 
+
+		toAddress := decrypt([]byte(encyrptedAdress),key)
+
+		fmt.Println("!!!!!redis state transition key", toAddress) 
 		
-
-
-		
-		// decodedTo := decrypt(encodedTo, encodeKey)
-		// fmt.Println("!!!!!====>>>>>>>>PRIVATE TXN 4 DECODED TO !!!!!!", decodedTo)
-		//ret, st.gas, vmerr = st.evm.Call(sender, decodedTo, st.data, st.gas, st.value)
-
-
-
-
-
-		
-		ret, st.gas, vmerr = st.evm.Call(sender, st.to(), st.data, st.gas, st.value)
+		ret, st.gas, vmerr = st.evm.Call(sender,common.HexToAddress(toAddress), st.data, st.gas, st.value)
 
 	} else {
 		// Increment the nonce for the next transaction
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
 		ret, st.gas, vmerr = st.evm.Call(sender, st.to(), st.data, st.gas, st.value)
 		
-	}//ADDED!!!!!!!!!!!!
+	} 
 
 	// use 10% of not used gas
 	if !st.internal() {
@@ -388,6 +341,33 @@ if (!encodedTo && contractCreation) {
 
 func BytesToString(data []byte) string {
 	return string(data[:])
+}
+
+
+func createHash(key string) string {
+	hasher := md5.New()
+	hasher.Write([]byte(key))
+	return hex.EncodeToString(hasher.Sum(nil))
+}
+
+func decrypt(data []byte, passphrase string) string{
+	key := []byte(createHash(passphrase))
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err.Error())
+	}
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		panic(err.Error())
+	}
+	nonceSize := gcm.NonceSize()
+	nonce, ciphertext := data[:nonceSize], data[nonceSize:]
+	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		panic(err.Error())
+	}
+	//return plaintext
+	return fmt.Sprintf("%x", plaintext)
 }
 
 func (st *StateTransition) refundGas() {

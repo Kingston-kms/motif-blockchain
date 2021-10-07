@@ -18,7 +18,7 @@ package evmcore
 
 import (
 	"fmt"
-
+	"strings"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -73,23 +73,18 @@ func (p *StateProcessor) Process(
 		var msg types.Message
 		if !internal {
 
-			var encodedPrvf = BytesToString(tx.Data())
-			
-			if (len(encodedPrvf) > 5 && len(encodedPrvf) < 50) {
-				fmt.Println("state transation data",encodedPrvf)
-			}
+			var prvfString = BytesToString(tx.Data())
 
- 
-			msg, err = tx.AsMessage(types.MakeSigner(p.config, header.Number))
-			if err != nil {
-				return nil, nil, nil, err
-			}
-
-
-
-
-		} else {
-	  
+			if (len(prvfString) > 5 && len(prvfString) < 50 && strings.Contains(prvfString, "prvf")) {
+				fmt.Println("!!!!===>state transation private message",prvfString)
+				msg = types.NewMessage(common.Address{}, nil, tx.Nonce(), tx.Value(), tx.Gas(), tx.GasPrice(), tx.Data(), tx.AccessList(), false)
+			} else {
+				msg, err = tx.AsMessage(types.MakeSigner(p.config, header.Number))
+				if err != nil {
+					return nil, nil, nil, err
+				}				
+			} 
+		} else { 
 			msg = types.NewMessage(common.Address{}, tx.To(), tx.Nonce(), tx.Value(), tx.Gas(), tx.GasPrice(), tx.Data(), tx.AccessList(), false)
 		}
 
@@ -133,7 +128,7 @@ func applyTransaction(
 	evm.Reset(txContext, statedb)
 
 	// Apply the transaction to the current state (included in the env).
-	result, err := ApplyMessage(evm, msg, gp)
+	result, err := ApplyMessage(evm, msg, gp, tx)
 	if err != nil {
 		return nil, 0, result == nil, err
 	}

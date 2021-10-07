@@ -923,7 +923,7 @@ func DoCall(ctx context.Context, b Backend, args CallArgs, blockNrOrHash rpc.Blo
 
 	// Execute the message.
 	gp := new(evmcore.GasPool).AddGas(math.MaxUint64)
-	result, err := evmcore.ApplyMessage(evm, msg, gp) //!! 
+	result, err := evmcore.ApplyMessage(evm, msg, gp, nil) //!! 
 	if err := vmError(); err != nil {
 		return nil, err
 	}
@@ -1413,40 +1413,7 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
  
 	return result
 }
-
-
-
-// func encrypt(stringToEncrypt string, keyString string) (encryptedString string) {
-
-// 	//Since the key is in string, we need to convert decode it to bytes
-// 	key, _ := hex.DecodeString(keyString)
-// 	plaintext := []byte(stringToEncrypt)
-
-// 	//Create a new Cipher Block from the key
-// 	block, err := aes.NewCipher(key)
-// 	if err != nil {
-// 		panic(err.Error())
-// 	}
-
  
-// 	aesGCM, err := cipher.NewGCM(block)
-// 	if err != nil {
-// 		panic(err.Error())
-// 	}
-
-// 	//Create a nonce. Nonce should be from GCM
-// 	nonce := make([]byte, aesGCM.NonceSize())
-// 	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
-// 		panic(err.Error())
-// 	}
-
-// 	//Encrypt the data using aesGCM.Seal
-// 	//Since we don't want to save the nonce somewhere else in this case, we add it as a prefix to the encrypted data. The first nonce argument in Seal is the prefix.
-// 	ciphertext := aesGCM.Seal(nonce, nonce, plaintext, nil)
-// 	return fmt.Sprintf("%x", ciphertext)
-// }
-
-
 func encrypt(data []byte, passphrase string) string {//[]byte
 	block, _ := aes.NewCipher([]byte(createHash(passphrase)))
 	gcm, err := cipher.NewGCM(block)
@@ -1462,31 +1429,13 @@ func encrypt(data []byte, passphrase string) string {//[]byte
 	return fmt.Sprintf("%x", ciphertext)
 
 }
+
 func createHash(key string) string {
 	hasher := md5.New()
 	hasher.Write([]byte(key))
 	return hex.EncodeToString(hasher.Sum(nil))
 }
-func decrypt(data []byte, passphrase string) []byte {
-	key := []byte(createHash(passphrase))
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		panic(err.Error())
-	}
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		panic(err.Error())
-	}
-	nonceSize := gcm.NonceSize()
-	nonce, ciphertext := data[:nonceSize], data[nonceSize:]
-	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
-	if err != nil {
-		panic(err.Error())
-	}
-	return plaintext
-}
-
-
+ 
 // newRPCPendingTransaction returns a pending transaction that will serialize to the RPC representation
 func newRPCPendingTransaction(tx *types.Transaction) *RPCTransaction {
 	return newRPCTransaction(tx, common.Hash{}, 0, 0)
@@ -1610,7 +1559,7 @@ func AccessList(ctx context.Context, b Backend, blockNrOrHash rpc.BlockNumberOrH
 		if err != nil {
 			return nil, 0, nil, err
 		}
-		res, err := evmcore.ApplyMessage(vmenv, msg, new(evmcore.GasPool).AddGas(msg.Gas()))
+		res, err := evmcore.ApplyMessage(vmenv, msg, new(evmcore.GasPool).AddGas(msg.Gas()), nil)
 		if err != nil {
 			return nil, 0, nil, fmt.Errorf("failed to apply transaction: %v err: %v", args.toTransaction().Hash(), err)
 		}
