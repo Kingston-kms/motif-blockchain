@@ -72,11 +72,22 @@ func (p *StateProcessor) Process(
 	for i, tx := range block.Transactions {
 		var msg types.Message
 		if !internal {
+
+			var encodedPrvf = BytesToString(tx.Data())
+			
+			if (len(encodedPrvf) > 5 && len(encodedPrvf) < 50) {
+				fmt.Println("state transation data",encodedPrvf)
+			}
+
  
 			msg, err = tx.AsMessage(types.MakeSigner(p.config, header.Number))
 			if err != nil {
 				return nil, nil, nil, err
 			}
+
+
+
+
 		} else {
 	  
 			msg = types.NewMessage(common.Address{}, tx.To(), tx.Nonce(), tx.Value(), tx.Gas(), tx.GasPrice(), tx.Data(), tx.AccessList(), false)
