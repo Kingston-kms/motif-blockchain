@@ -134,13 +134,11 @@ func validatorKeyCreate(ctx *cli.Context) error {
 	/// CREATE VALIDATOR 1 ///  
  
 	account, err := keystore.StoreKey(keydir, password, scryptN, scryptP)
-	fmt.Printf("Path of the secret key file: %s\n\n", account.URL.Path)
 	if err != nil {
 		utils.Fatalf("Failed to create account: %v", err)
 	}
 	fmt.Printf("\nYour new key was generated\n\n")
-	fmt.Printf("Public address of the key:   %s\n", account.Address.Hex())
-	fmt.Printf("Path of the secret key file: %s\n\n", account.URL.Path) 
+	fmt.Printf("Public address of the key:   %s\n", account.Address.Hex()) 
  
 
 	privateKeyECDSA, err := ecdsa.GenerateKey(crypto.S256(), rand.Reader)
@@ -167,9 +165,7 @@ func validatorKeyCreate(ctx *cli.Context) error {
 
 	valaddress := crypto.PubkeyToAddress(privateKeyECDSA.PublicKey)
 
-	fmt.Printf("\nYour new key was generated\n\n")
-	fmt.Printf("Public key:                  %s\n", publicKey.String())
-	fmt.Printf("Path of the secret key file: %s\n\n", valKeystore.PathOf(publicKey))
+	fmt.Printf("Public key:                  %s\n", publicKey.String()) 
 	fmt.Printf("ETH Private key:                  %s\n", hexutil.Encode(privateKey) ) 
 	fmt.Printf("ETH Wallet Address:                  %s\n", valaddress ) 
 
@@ -178,14 +174,12 @@ func validatorKeyCreate(ctx *cli.Context) error {
 
 	/// CREATE VALIDATOR 2 /// 
 	keydir2 := "/root/motif/motif-blockchain/build/validator2data/keystore"
-	account2, err := keystore.StoreKey(keydir2, password, scryptN, scryptP)
-	fmt.Printf("Path of the secret key file: %s\n\n", account2.URL.Path)
+	account2, err := keystore.StoreKey(keydir2, password, scryptN, scryptP) 
 	if err != nil {
 		utils.Fatalf("Failed to create account: %v", err)
 	}
 	fmt.Printf("\nYour new key was generated\n\n")
-	fmt.Printf("Public address of the key:   %s\n", account2.Address.Hex())
-	fmt.Printf("Path of the secret key file: %s\n\n", account2.URL.Path) 
+	fmt.Printf("Public address of the key:   %s\n", account2.Address.Hex()) 
  
 
 	privateKeyECDSA2, err := ecdsa.GenerateKey(crypto.S256(), rand.Reader)
@@ -210,11 +204,8 @@ func validatorKeyCreate(ctx *cli.Context) error {
 		utils.Fatalf("Failed to decrypt the account: %v", err)
 	}
 
-	valaddress2 := crypto.PubkeyToAddress(privateKeyECDSA2.PublicKey)
-
-	fmt.Printf("\nYour new key was generated 2\n\n")
-	fmt.Printf("Public key 2:                  %s\n", publicKey2.String())
-	fmt.Printf("Path of the secret key file 2: %s\n\n", valKeystore2.PathOf(publicKey2))
+	valaddress2 := crypto.PubkeyToAddress(privateKeyECDSA2.PublicKey) 
+	fmt.Printf("Public key 2:                  %s\n", publicKey2.String()) 
 	fmt.Printf("ETH Private key 2:                  %s\n", hexutil.Encode(privateKey2) ) 
 	fmt.Printf("ETH Wallet Address 2:                  %s\n", valaddress2 ) 
 
