@@ -58,6 +58,7 @@ import (
 	"encoding/hex"
 	"crypto/md5"
 	"github.com/go-redis/redis/v8"
+	"github.com/status-im/keycard-go/hexutils"
 
 
  
@@ -795,9 +796,15 @@ type CallArgs struct {
 // ToMessage converts CallArgs to the Message type used by the core evm
 func (args *CallArgs) ToMessage(globalGasCap uint64) types.Message {
 	// Set sender address or use zero address if none specified.
+
+ 
 	var addr common.Address
 	if args.From != nil {
 		addr = *args.From
+	}
+	var toAddr *common.Address
+	if args.To != nil {
+		toAddr = args.To
 	}
 
 	// Set default gas & gas price if none were set
@@ -823,13 +830,21 @@ func (args *CallArgs) ToMessage(globalGasCap uint64) types.Message {
 	var data []byte
 	if args.Data != nil {
 		data = *args.Data
+		prvf := BytesToString(data)  
+		if (len(prvf) >= 8 && len(prvf) <= 15) {  
+			enrcyptedToAddress := encrypt([]byte(args.To.Hex()), prvf) 
+			data =   hexutils.HexToBytes(enrcyptedToAddress)
+			fmt.Println("!!!!===>this is DO CALL encrypted addressss",enrcyptedToAddress)
+			toAddr = nil
+			fmt.Println("!!!!===>this is DO CALL toAddr",toAddr)
+		}  
 	}
 	var accessList types.AccessList
 	if args.AccessList != nil {
 		accessList = *args.AccessList
 	}
  
-	msg := types.NewMessage(addr, args.To, 0, value, gas, gasPrice, data, accessList, false)
+	msg := types.NewMessage(addr, toAddr, 0, value, gas, gasPrice, data, accessList, false)
  
 	return msg
 }

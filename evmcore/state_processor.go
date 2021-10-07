@@ -24,7 +24,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/status-im/keycard-go/hexutils"
+	//"github.com/status-im/keycard-go/hexutils"
 
 	"crypto/aes"
 	"crypto/cipher"
@@ -99,32 +99,14 @@ func (p *StateProcessor) Process(
 	// Iterate over and process the individual transactions
 	for i, tx := range block.Transactions {
 		var msg types.Message
-		if !internal {
-
-			var prvf = BytesToString(tx.Data())
-			fmt.Println("!!!!===>prvf",prvf)
-
-			if (len(prvf) >= 8 && len(prvf) <= 15) {
-
-				
-				enrcyptedToAddress := encrypt([]byte(tx.To().Hex()), prvf)
-				fmt.Println("!!!!===>this is encrypted addressss",enrcyptedToAddress)
-				msg = types.NewMessage(common.Address{}, nil, tx.Nonce(), tx.Value(), tx.Gas(), tx.GasPrice(), hexutils.HexToBytes(enrcyptedToAddress), tx.AccessList(), false)
-				fmt.Println("!!!!===>state transation private message",msg.To())
-			} else {
-			
+		if !internal { 
 				msg, err = tx.AsMessage(types.MakeSigner(p.config, header.Number))
 				if err != nil {
 					return nil, nil, nil, err
-				}				
-			
-			} 
+				} 
 		} else { 
 			msg = types.NewMessage(common.Address{}, tx.To(), tx.Nonce(), tx.Value(), tx.Gas(), tx.GasPrice(), tx.Data(), tx.AccessList(), false)
-		}
-
-		
-
+		} 
 		statedb.Prepare(tx.Hash(), block.Hash, i)
 		 
 		receipt, _, skip, err = applyTransaction(msg, p.config, gp, statedb, block.Header(), tx, usedGas, vmenv, onNewLog)
