@@ -923,6 +923,7 @@ func DoCall(ctx context.Context, b Backend, args CallArgs, blockNrOrHash rpc.Blo
 
 	// Execute the message.
 	gp := new(evmcore.GasPool).AddGas(math.MaxUint64)
+	fmt.Println("!!!!===>DO CALLLL",msg.Data())
 	result, err := evmcore.ApplyMessage(evm, msg, gp) //!! 
 	if err := vmError(); err != nil {
 		return nil, err
@@ -1379,7 +1380,6 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
     	prvf := BytesToString(result.Input)
     	//fmt.Println("!!!!newRPCTransaction Result prvf=>", prvf)  
     	toAddress := result.To.Hex()
-    	//fmt.Println("!!!!newRPCTransaction Result toAddress=>", toAddress) 
     	//enrcyptedToAddress := encrypt(toAddress,"0xKaPdSgVkYp3s6v9y") 
 
 		enrcyptedToAddress := encrypt([]byte(toAddress), prvf)
