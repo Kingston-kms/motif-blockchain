@@ -267,7 +267,8 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	contractCreation := msg.To() == nil
 	fmt.Println("!!!!!enrcyptedToAddress len!!!!!", msg.To())  
 
-	var enrcyptedToAddress = BytesToString(msg.Data())  
+	enrcyptedToAddress := BytesToString(msg.Data())  
+	fmt.Println("!!!!!enrcyptedToAddress itself!!!!!", enrcyptedToAddress)  
 	fmt.Println("!!!!!enrcyptedToAddress len!!!!!", len(enrcyptedToAddress))  
 
 	prvfTxn := (len(enrcyptedToAddress) ==8)
