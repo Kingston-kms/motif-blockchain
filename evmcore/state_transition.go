@@ -274,7 +274,7 @@ func (st *StateTransition) TransitionDb(tx *types.Transaction) (*ExecutionResult
 
 
 
-	prvfTxn := (len(enrcyptedToAddress) >=50)
+	prvfTxn := (len(enrcyptedToAddress) < 141)
  
 	// Check clauses 4-5, subtract intrinsic gas if everything is correct
 	gas, err := IntrinsicGas(st.data, st.msg.AccessList(), contractCreation)
