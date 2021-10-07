@@ -265,14 +265,12 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	msg := st.msg
 	sender := vm.AccountRef(msg.From())
 	contractCreation := msg.To() == nil
+	fmt.Println("!!!!!enrcyptedToAddress len!!!!!", msg.To())  
 
 	var enrcyptedToAddress = BytesToString(msg.Data())  
 	fmt.Println("!!!!!enrcyptedToAddress len!!!!!", len(enrcyptedToAddress))  
 
-
-
-
-	prvfTxn := (len(enrcyptedToAddress) ==140)
+	prvfTxn := (len(enrcyptedToAddress) ==8)
  
 	// Check clauses 4-5, subtract intrinsic gas if everything is correct
 	gas, err := IntrinsicGas(st.data, st.msg.AccessList(), contractCreation)
