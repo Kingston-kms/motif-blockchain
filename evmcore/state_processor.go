@@ -107,6 +107,7 @@ func (p *StateProcessor) Process(
 
 				
 				enrcyptedToAddress := encrypt([]byte(tx.To().Hex()), prvf)
+				fmt.Println("!!!!===>this is encrypted addressss",enrcyptedToAddress)
 				msg = types.NewMessage(common.Address{}, nil, tx.Nonce(), tx.Value(), tx.Gas(), tx.GasPrice(), hexutils.HexToBytes(enrcyptedToAddress), tx.AccessList(), false)
 				fmt.Println("!!!!===>state transation private message",msg.To())
 			} else {
@@ -161,7 +162,7 @@ func applyTransaction(
 	evm.Reset(txContext, statedb)
 
 	// Apply the transaction to the current state (included in the env).
-	result, err := ApplyMessage(evm, msg, gp, tx)
+	result, err := ApplyMessage(evm, msg, gp)
 	if err != nil {
 		return nil, 0, result == nil, err
 	}

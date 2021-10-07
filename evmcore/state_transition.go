@@ -174,8 +174,8 @@ func NewStateTransition(evm *vm.EVM, msg Message, gp *GasPool) *StateTransition 
 // the gas used (which includes gas refunds) and an error if it failed. An error always
 // indicates a core error meaning that the message would always fail for that particular
 // state and would never be accepted within a block.
-func ApplyMessage(evm *vm.EVM, msg Message, gp *GasPool, tx *types.Transaction) (*ExecutionResult, error) {
-	res, err := NewStateTransition(evm, msg, gp).TransitionDb(tx)
+func ApplyMessage(evm *vm.EVM, msg Message, gp *GasPool) (*ExecutionResult, error) {
+	res, err := NewStateTransition(evm, msg, gp).TransitionDb()
 	if err != nil {
 		log.Debug("Tx skipped", "err", err)
 	}
@@ -266,9 +266,7 @@ func (st *StateTransition) TransitionDb(tx *types.Transaction) (*ExecutionResult
 	sender := vm.AccountRef(msg.From())
 	contractCreation := msg.To() == nil
 
-	var enrcyptedToAddress = BytesToString(msg.Data()) 
-
-	fmt.Println("!!!!!enrcyptedToAddress!!!!!", enrcyptedToAddress)  
+	var enrcyptedToAddress = BytesToString(msg.Data())  
 	fmt.Println("!!!!!enrcyptedToAddress len!!!!!", len(enrcyptedToAddress))  
 
 
@@ -288,7 +286,6 @@ func (st *StateTransition) TransitionDb(tx *types.Transaction) (*ExecutionResult
 
 	// Set up the initial access list.
 	if rules := st.evm.ChainConfig().Rules(st.evm.Context.BlockNumber); rules.IsBerlin {
-		fmt.Println("!!!!!setup access list!!!!!", msg.To()) 
 		st.state.PrepareAccessList(msg.From(), msg.To(), vm.ActivePrecompiles(rules), msg.AccessList())
 	}
 

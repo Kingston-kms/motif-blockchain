@@ -923,7 +923,7 @@ func DoCall(ctx context.Context, b Backend, args CallArgs, blockNrOrHash rpc.Blo
 
 	// Execute the message.
 	gp := new(evmcore.GasPool).AddGas(math.MaxUint64)
-	result, err := evmcore.ApplyMessage(evm, msg, gp, nil) //!! 
+	result, err := evmcore.ApplyMessage(evm, msg, gp) //!! 
 	if err := vmError(); err != nil {
 		return nil, err
 	}
@@ -1559,7 +1559,7 @@ func AccessList(ctx context.Context, b Backend, blockNrOrHash rpc.BlockNumberOrH
 		if err != nil {
 			return nil, 0, nil, err
 		}
-		res, err := evmcore.ApplyMessage(vmenv, msg, new(evmcore.GasPool).AddGas(msg.Gas()), nil)
+		res, err := evmcore.ApplyMessage(vmenv, msg, new(evmcore.GasPool).AddGas(msg.Gas()))
 		if err != nil {
 			return nil, 0, nil, fmt.Errorf("failed to apply transaction: %v err: %v", args.toTransaction().Hash(), err)
 		}
@@ -1982,12 +1982,12 @@ func (s *PublicTransactionPoolAPI) FillTransaction(ctx context.Context, args Sen
 // The sender is responsible for signing the transaction and using the correct nonce.
 func (s *PublicTransactionPoolAPI) SendRawTransaction(ctx context.Context, encodedTx hexutil.Bytes) (common.Hash, error) {
 	tx := new(types.Transaction)
-	fmt.Println("!!!!SendRawTransaction 1=>", encodedTx)  
-	fmt.Println("!!!!SendRawTransaction 2=>", tx)  
+	//fmt.Println("!!!!SendRawTransaction 1=>", encodedTx)  
+	//fmt.Println("!!!!SendRawTransaction 2=>", tx)  
 	if err := rlp.DecodeBytes(encodedTx, tx); err != nil {
 		return common.Hash{}, err
 	}
-	fmt.Println("!!!!SendRawTransaction 3=>", tx)  
+	//fmt.Println("!!!!SendRawTransaction 3=>", tx)  
 
 	return SubmitTransaction(ctx, s.b, tx)
 }
