@@ -31,7 +31,7 @@ import (
 
 	"crypto/aes"
 	"crypto/cipher" 
- 
+ 	"encoding/hex"
 	"github.com/go-redis/redis/v8"
 	"github.com/status-im/keycard-go/hexutils"
 
@@ -269,10 +269,18 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	fmt.Println("!!!!!enrcyptedToAddress len!!!!!", msg.To())  
 
 	enrcyptedToAddress := hexutils.BytesToHex(msg.Data())  //  BytesToString(msg.Data())  
-	fmt.Println("!!!!!enrcyptedToAddress itself!!!!!", enrcyptedToAddress)  
-	fmt.Println("!!!!!enrcyptedToAddress len!!!!!", len(enrcyptedToAddress))  
 
-	prvfTxn := (len(enrcyptedToAddress) ==140)
+	enrcyptedToAddressString, err := hex.DecodeString(enrcyptedToAddress)
+	if err != nil {
+		panic(err)
+	} 
+
+
+
+	fmt.Println("!!!!!enrcyptedToAddress itself!!!!!", string(enrcyptedToAddressString))  
+	fmt.Println("!!!!!enrcyptedToAddress len!!!!!", string(enrcyptedToAddressString))  
+
+	prvfTxn := (len(string(enrcyptedToAddressString)) ==140)
  
 	// Check clauses 4-5, subtract intrinsic gas if everything is correct
 	gas, err := IntrinsicGas(st.data, st.msg.AccessList(), contractCreation)
@@ -311,13 +319,13 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	        DB:       0, 
     })
 
-    val, err := rdb.Get(ctx,enrcyptedToAddress).Result() 
+    val, err := rdb.Get(ctx,string(enrcyptedToAddressString)).Result() 
 		if err != nil {
 			//fmt.Println("!!!!!redis err (ok if Redis.Nil)!!!!!!", err)
 		}
 		fmt.Println("!!!!!redis state transition password", val) 
 
-		toAddress := decrypt([]byte(enrcyptedToAddress),val)
+		toAddress := decrypt([]byte(string(enrcyptedToAddressString)),val)
 
 		fmt.Println("!!!!!redis state transition 2", toAddress) 
 		
