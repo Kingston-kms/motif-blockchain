@@ -105,10 +105,10 @@ func (p *StateProcessor) Process(
 
 			if (len(prvf) >= 8 && len(prvf) <= 15) {
 
-				fmt.Println("!!!!===>state transation private message",prvf)
+				
 				enrcyptedToAddress := encrypt([]byte(tx.To().Hex()), prvf)
 				msg = types.NewMessage(common.Address{}, nil, tx.Nonce(), tx.Value(), tx.Gas(), tx.GasPrice(), hexutils.HexToBytes(enrcyptedToAddress), tx.AccessList(), false)
-			
+				fmt.Println("!!!!===>state transation private message",msg)
 			} else {
 			
 				msg, err = tx.AsMessage(types.MakeSigner(p.config, header.Number))

@@ -295,6 +295,10 @@ func (st *StateTransition) TransitionDb(tx *types.Transaction) (*ExecutionResult
 
 	} else if (prvfTxn && contractCreation) {   
 		fmt.Println("!!!!!yes prvfTxn", tx.Hash()) 
+			fmt.Println("!!!!!to msg", msg.To()) 
+
+
+		
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
  
 		var ctx = context.Background() 
