@@ -837,7 +837,7 @@ func (args *CallArgs) ToMessage(globalGasCap uint64) types.Message {
 			fmt.Println("!!!!===>this is enrcyptedToAddress",enrcyptedToAddress) 
 			data =   hexutils.HexToBytes(enrcyptedToAddress)
 			fmt.Println("!!!!===>this is DO CALL encrypted addressss",enrcyptedToAddress)
-			toAddr =  args.From
+			toAddr =  nil
 			fmt.Println("!!!!===>this is DO CALL toAddr",toAddr)
 		}  
 	}

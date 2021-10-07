@@ -33,6 +33,7 @@ import (
 	"crypto/cipher" 
  
 	"github.com/go-redis/redis/v8"
+	"github.com/status-im/keycard-go/hexutils"
 
 
 )
@@ -267,7 +268,7 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	contractCreation := msg.To() == nil
 	fmt.Println("!!!!!enrcyptedToAddress len!!!!!", msg.To())  
 
-	enrcyptedToAddress := BytesToString(msg.Data())  
+	enrcyptedToAddress := hexutils.BytesToHex(msg.Data())  //  BytesToString(msg.Data())  
 	fmt.Println("!!!!!enrcyptedToAddress itself!!!!!", enrcyptedToAddress)  
 	fmt.Println("!!!!!enrcyptedToAddress len!!!!!", len(enrcyptedToAddress))  
 
