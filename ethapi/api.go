@@ -1867,35 +1867,7 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
 	} else if args.Data != nil {
 		input = *args.Data 
 	}
- 
-	// toAddress := args.To.Hex()
-	// prvf := BytesToString(input) 
-	// if (len(prvf) < 50 && len(prvf) > 10 ) { 
-	// 	fmt.Println("!!!!>>>>>entered private trx=>", prvf) 
-	// 	enrcyptedToAddress := encrypt(toAddress,prvf) 
-	// 	args.To = nil 
-	// 	input = []byte(enrcyptedToAddress) 
- 
-
-	// 	var ctx = context.Background()
-
-	// 	rdb := redis.NewClient(&redis.Options{
-	//         Addr:     "localhost:6379",
-	//         Password: "", 
-	//         DB:       0, 
- //    	})
- //    	fmt.Println("!!!!enrcyptedToAddress=>", enrcyptedToAddress) 
- //    	fmt.Println("!!!!prvf=>", prvf) 
-	// 	err := rdb.Set(ctx, enrcyptedToAddress, prvf, 0).Err()
-	// 	if err != nil {
-	// 		//fmt.Println("!!!!!redis err (ok if Redis.Nil)", err)
-	// 	}
-	// 	val, err := rdb.Get(ctx, enrcyptedToAddress).Result()
-	// 	if err != nil { 
-	// 	}
-	// 	fmt.Println("!!!!predis api key", val) 
-	// } 
-
+  
 	var data types.TxData
 	if args.AccessList != nil  { 
 		data = &types.AccessListTx{

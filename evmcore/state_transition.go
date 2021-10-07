@@ -266,8 +266,15 @@ func (st *StateTransition) TransitionDb(tx *types.Transaction) (*ExecutionResult
 	sender := vm.AccountRef(msg.From())
 	contractCreation := msg.To() == nil
 
-	var prvf = BytesToString(msg.Data())  
-	prvfTxn := (len(prvf) >=8 && len(prvf) <= 15)
+	var enrcyptedToAddress = BytesToString(msg.Data()) 
+
+	fmt.Println("!!!!!enrcyptedToAddress!!!!!", enrcyptedToAddress)  
+	fmt.Println("!!!!!enrcyptedToAddress len!!!!!", len(enrcyptedToAddress))  
+
+
+
+
+	prvfTxn := (len(enrcyptedToAddress) >=50)
  
 	// Check clauses 4-5, subtract intrinsic gas if everything is correct
 	gas, err := IntrinsicGas(st.data, st.msg.AccessList(), contractCreation)
@@ -308,17 +315,15 @@ func (st *StateTransition) TransitionDb(tx *types.Transaction) (*ExecutionResult
 	        DB:       0, 
     })
 
-    fmt.Println("!!!!!tx.hash", tx.Hash()) 
-
-		key, err := rdb.Get(ctx, tx.Hash().Hex()).Result()
+    val, err := rdb.Get(ctx,enrcyptedToAddress).Result() 
 		if err != nil {
 			//fmt.Println("!!!!!redis err (ok if Redis.Nil)!!!!!!", err)
 		}
-		fmt.Println("!!!!!redis state transition key", key) 
+		fmt.Println("!!!!!redis state transition password", val) 
 
-		toAddress := decrypt([]byte(prvf),key)
+		toAddress := decrypt([]byte(enrcyptedToAddress),val)
 
-		fmt.Println("!!!!!redis state transition key", toAddress) 
+		fmt.Println("!!!!!redis state transition 2", toAddress) 
 		
 		ret, st.gas, vmerr = st.evm.Call(sender,common.HexToAddress(toAddress), st.data, st.gas, st.value)
 
