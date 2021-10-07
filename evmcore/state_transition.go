@@ -297,7 +297,7 @@ func (st *StateTransition) TransitionDb(tx *types.Transaction) (*ExecutionResult
 
 	} else if (prvfTxn) {   
 
-		fmt.Println("!!!!!yes prvfTxn", tx.Hash()) 
+ 
 		fmt.Println("!!!!!to msg", msg.To()) 
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
  
