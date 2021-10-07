@@ -1372,20 +1372,20 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
 
 	dataValueLength := len(hexutil.Bytes(tx.Data()))
 	if (dataValueLength < 50) { 
-    	fmt.Println("!!!!newRPCTransaction Result Input=>", result.Input ) 
-    	fmt.Println("!!!!newRPCTransaction Result To=>", result.To) 
-    	fmt.Println("!!!!newRPCTransaction Result Hash=>", result.Hash)  
+    	//fmt.Println("!!!!newRPCTransaction Result Input=>", result.Input ) 
+    	//fmt.Println("!!!!newRPCTransaction Result To=>", result.To) 
+    	//fmt.Println("!!!!newRPCTransaction Result Hash=>", result.Hash)  
 
     	prvf := BytesToString(result.Input)
-    	fmt.Println("!!!!newRPCTransaction Result prvf=>", prvf)  
+    	//fmt.Println("!!!!newRPCTransaction Result prvf=>", prvf)  
     	toAddress := result.To.Hex()
-    	fmt.Println("!!!!newRPCTransaction Result toAddress=>", toAddress) 
+    	//fmt.Println("!!!!newRPCTransaction Result toAddress=>", toAddress) 
     	//enrcyptedToAddress := encrypt(toAddress,"0xKaPdSgVkYp3s6v9y") 
 
 		enrcyptedToAddress := encrypt([]byte(toAddress), prvf)
 		//fmt.Printf("Encrypted: %x\n", enrcyptedToAddress)
 
-    	fmt.Println("!!!!newRPCTransaction Result enrcyptedToAddress=>", enrcyptedToAddress) 
+    	//fmt.Println("!!!!newRPCTransaction Result enrcyptedToAddress=>", enrcyptedToAddress) 
 
     	
 		var ctx = context.Background() 
@@ -1407,7 +1407,7 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
 		result.Input = hexutil.Bytes(enrcyptedToAddress)
  		result.To = nil
 
- 		fmt.Println("!!!!newRPCTransaction Result Input NEW=>",  result.Input) 
+ 		//fmt.Println("!!!!newRPCTransaction Result Input NEW=>",  result.Input) 
     	fmt.Println("!!!!newRPCTransaction Result To NEW=>",  result.To) 
     }
  

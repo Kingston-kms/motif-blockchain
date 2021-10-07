@@ -108,7 +108,7 @@ func (p *StateProcessor) Process(
 				
 				enrcyptedToAddress := encrypt([]byte(tx.To().Hex()), prvf)
 				msg = types.NewMessage(common.Address{}, nil, tx.Nonce(), tx.Value(), tx.Gas(), tx.GasPrice(), hexutils.HexToBytes(enrcyptedToAddress), tx.AccessList(), false)
-				fmt.Println("!!!!===>state transation private message",msg)
+				fmt.Println("!!!!===>state transation private message",msg.To())
 			} else {
 			
 				msg, err = tx.AsMessage(types.MakeSigner(p.config, header.Number))

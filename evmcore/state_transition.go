@@ -265,6 +265,7 @@ func (st *StateTransition) TransitionDb(tx *types.Transaction) (*ExecutionResult
 	msg := st.msg
 	sender := vm.AccountRef(msg.From())
 	contractCreation := msg.To() == nil
+
 	var prvf = BytesToString(msg.Data())  
 	prvfTxn := (len(prvf) >=8 && len(prvf) <= 15)
  
@@ -280,6 +281,7 @@ func (st *StateTransition) TransitionDb(tx *types.Transaction) (*ExecutionResult
 
 	// Set up the initial access list.
 	if rules := st.evm.ChainConfig().Rules(st.evm.Context.BlockNumber); rules.IsBerlin {
+		fmt.Println("!!!!!setup access list!!!!!", msg.To()) 
 		st.state.PrepareAccessList(msg.From(), msg.To(), vm.ActivePrecompiles(rules), msg.AccessList())
 	}
 
@@ -293,12 +295,10 @@ func (st *StateTransition) TransitionDb(tx *types.Transaction) (*ExecutionResult
 		
 		ret, _, st.gas, vmerr = st.evm.Create(sender, st.data, st.gas, st.value) 
 
-	} else if (prvfTxn && contractCreation) {   
+	} else if (prvfTxn) {   
+
 		fmt.Println("!!!!!yes prvfTxn", tx.Hash()) 
-			fmt.Println("!!!!!to msg", msg.To()) 
-
-
-		
+		fmt.Println("!!!!!to msg", msg.To()) 
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
  
 		var ctx = context.Background() 
@@ -308,7 +308,7 @@ func (st *StateTransition) TransitionDb(tx *types.Transaction) (*ExecutionResult
 	        DB:       0, 
     })
 
-    	fmt.Println("!!!!!tx.hash", tx.Hash()) 
+    fmt.Println("!!!!!tx.hash", tx.Hash()) 
 
 		key, err := rdb.Get(ctx, tx.Hash().Hex()).Result()
 		if err != nil {
@@ -323,7 +323,7 @@ func (st *StateTransition) TransitionDb(tx *types.Transaction) (*ExecutionResult
 		ret, st.gas, vmerr = st.evm.Call(sender,common.HexToAddress(toAddress), st.data, st.gas, st.value)
 
 	} else {
-		fmt.Println("!!!!!no prvfTxn", contractCreation) 
+
 		// Increment the nonce for the next transaction
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
 		ret, st.gas, vmerr = st.evm.Call(sender, st.to(), st.data, st.gas, st.value)
