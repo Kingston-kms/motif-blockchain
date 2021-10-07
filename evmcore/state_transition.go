@@ -277,7 +277,7 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 
 
 
-	fmt.Println("!!!!!enrcyptedToAddress itself!!!!!", string(enrcyptedToAddressString))  
+	fmt.Println("!!!!!enrcyptedToAddress itself!!!!!", string(enrcyptedToAddressString))  //
 	fmt.Println("!!!!!enrcyptedToAddress len!!!!!", string(enrcyptedToAddressString))  
 
 	prvfTxn := (len(string(enrcyptedToAddressString)) ==140)
