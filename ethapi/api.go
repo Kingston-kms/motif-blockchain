@@ -1389,7 +1389,10 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
 
 
 	dataValueLength := len(hexutil.Bytes(tx.Data()))
-	if (dataValueLength < 50) { 
+	fmt.Println("!!!!===>this is RPC CALL LENGTH",dataValueLength)
+
+	if (len(dataValueLength) >= 8 && len(dataValueLength) <= 15) {  
+ 
     	//fmt.Println("!!!!newRPCTransaction Result Input=>", result.Input ) 
     	//fmt.Println("!!!!newRPCTransaction Result To=>", result.To) 
     	//fmt.Println("!!!!newRPCTransaction Result Hash=>", result.Hash)  
