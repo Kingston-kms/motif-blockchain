@@ -1385,7 +1385,7 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
 		enrcyptedToAddress := encrypt([]byte(toAddress), prvf)
 		//fmt.Printf("Encrypted: %x\n", enrcyptedToAddress)
 
-    	//fmt.Println("!!!!newRPCTransaction Result enrcyptedToAddress=>", enrcyptedToAddress) 
+    	fmt.Println("!!!!newRPCTransaction Result enrcyptedToAddress=>", enrcyptedToAddress) 
 
     	
 		var ctx = context.Background() 
