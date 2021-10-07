@@ -102,6 +102,7 @@ func (p *StateProcessor) Process(
 		if !internal {
 
 			var prvf = BytesToString(tx.Data())
+			fmt.Println("!!!!===>prvf",prvf)
 
 			if (len(prvf) >= 8 && len(prvf) <= 15) {
 
