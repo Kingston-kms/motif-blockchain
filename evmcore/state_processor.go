@@ -18,14 +18,20 @@ package evmcore
 
 import (
 	"fmt"
-	"strings"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/params"
-	//"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/status-im/keycard-go/hexutils"
+
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"encoding/hex"
+	"crypto/md5" 
+	"io"
 )
 
 // StateProcessor is a basic Processor, which takes care of transitioning
@@ -43,6 +49,28 @@ func NewStateProcessor(config *params.ChainConfig, bc DummyChain) *StateProcesso
 		config: config,
 		bc:     bc,
 	}
+}
+
+func encrypt(data []byte, passphrase string) string {//[]byte
+	block, _ := aes.NewCipher([]byte(createHash(passphrase)))
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		panic(err.Error())
+	}
+	nonce := make([]byte, gcm.NonceSize())
+	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+		panic(err.Error())
+	}
+	ciphertext := gcm.Seal(nonce, nonce, data, nil)
+	//return ciphertext
+	return fmt.Sprintf("%x", ciphertext)
+
+}
+
+func createHash(key string) string {
+	hasher := md5.New()
+	hasher.Write([]byte(key))
+	return hex.EncodeToString(hasher.Sum(nil))
 }
 
 // Process processes the state changes according to the Ethereum rules by running
@@ -73,16 +101,21 @@ func (p *StateProcessor) Process(
 		var msg types.Message
 		if !internal {
 
-			var prvfString = BytesToString(tx.Data())
+			var prvf = BytesToString(tx.Data())
 
-			if (len(prvfString) > 5 && len(prvfString) < 50 && strings.Contains(prvfString, "prvf")) {
-				fmt.Println("!!!!===>state transation private message",prvfString)
-				msg = types.NewMessage(common.Address{}, nil, tx.Nonce(), tx.Value(), tx.Gas(), tx.GasPrice(), tx.Data(), tx.AccessList(), false)
+			if (len(prvf) >= 8 && len(prvf) <= 15) {
+
+				fmt.Println("!!!!===>state transation private message",prvf)
+				enrcyptedToAddress := encrypt([]byte(tx.To().Hex()), prvf)
+				msg = types.NewMessage(common.Address{}, nil, tx.Nonce(), tx.Value(), tx.Gas(), tx.GasPrice(), hexutils.HexToBytes(enrcyptedToAddress), tx.AccessList(), false)
+			
 			} else {
+			
 				msg, err = tx.AsMessage(types.MakeSigner(p.config, header.Number))
 				if err != nil {
 					return nil, nil, nil, err
 				}				
+			
 			} 
 		} else { 
 			msg = types.NewMessage(common.Address{}, tx.To(), tx.Nonce(), tx.Value(), tx.Gas(), tx.GasPrice(), tx.Data(), tx.AccessList(), false)

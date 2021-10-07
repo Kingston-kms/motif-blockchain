@@ -22,7 +22,7 @@ import (
  
 	"context"
 	"math/big"
-	"encoding/hex"
+ 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
@@ -31,7 +31,7 @@ import (
 
 	"crypto/aes"
 	"crypto/cipher" 
-	"crypto/md5"
+ 
 	"github.com/go-redis/redis/v8"
 
 
@@ -267,7 +267,7 @@ func (st *StateTransition) TransitionDb(tx *types.Transaction) (*ExecutionResult
 	contractCreation := msg.To() == nil
 	var encyrptedAdress = BytesToString(msg.Data())
 	fmt.Println("!!!!!len encyrptedAdress)", len(encyrptedAdress)) 
-	prvfTxn := (len(encyrptedAdress) == 140 && tx != nil)
+	prvfTxn := (len(encyrptedAdress) >=8 && len(encyrptedAdress) <= 15 && tx != nil)
  
 	// Check clauses 4-5, subtract intrinsic gas if everything is correct
 	gas, err := IntrinsicGas(st.data, st.msg.AccessList(), contractCreation)
@@ -343,12 +343,7 @@ func BytesToString(data []byte) string {
 	return string(data[:])
 }
 
-
-func createHash(key string) string {
-	hasher := md5.New()
-	hasher.Write([]byte(key))
-	return hex.EncodeToString(hasher.Sum(nil))
-}
+ 
 
 func decrypt(data []byte, passphrase string) string{
 	key := []byte(createHash(passphrase))
