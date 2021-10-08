@@ -830,8 +830,8 @@ func (args *CallArgs) ToMessage(globalGasCap uint64) types.Message {
 	var data []byte
 	if args.Data != nil {
 		data = *args.Data 
-		//prvf := hexutils.BytesToHex(data)  
-		prvf := BytesToString(data) 
+		prvf := hexutils.BytesToHex(data)  
+		//prvf := BytesToString(data) 
         fmt.Println("!!!!newRPCTransaction22222 Result prvf=>", prvf)  
 		if (len(prvf) >= 8 && len(prvf) <= 15) {  
 			enrcyptedToAddress := encrypt([]byte(args.To.Hex()), prvf)
@@ -1398,7 +1398,10 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
     	//fmt.Println("!!!!newRPCTransaction Result To=>", result.To) 
     	//fmt.Println("!!!!newRPCTransaction Result Hash=>", result.Hash)  
 
-    	prvf := BytesToString(result.Input)
+    	//prvf := BytesToString(result.Input)
+
+    	prvf := hexutils.BytesToHex(result.Input)  
+
     	fmt.Println("!!!!newRPCTransaction Result prvf=>", prvf)  
     	toAddress := result.To.Hex()
     	 
