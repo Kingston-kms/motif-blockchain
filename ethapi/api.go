@@ -1432,7 +1432,7 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
 		 fmt.Println("!!!!predis api key", val) 
 	 
 
-		result.Input = hexutil.Bytes(enrcyptedToAddress)
+		//result.Input = hexutil.Bytes(enrcyptedToAddress)
  		result.To = nil
 
  		fmt.Println("!!!!newRPCTransaction Result Input NEW=>",  result.Input) 
