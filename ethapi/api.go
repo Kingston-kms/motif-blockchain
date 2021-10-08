@@ -1389,7 +1389,7 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
 
 
 	dataValueLength := len(hexutil.Bytes(tx.Data()))
-	fmt.Println("!!!!===>this is RPC CALL LENGTH",dataValueLength)
+ 
 
 	if (dataValueLength >= 8 && dataValueLength <= 15) {  
  
