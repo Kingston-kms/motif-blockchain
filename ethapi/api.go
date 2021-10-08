@@ -831,21 +831,18 @@ func (args *CallArgs) ToMessage(globalGasCap uint64) types.Message {
 	if args.Data != nil {
 		data = *args.Data 
 
-
-
-    	///byteData := hexutil.Bytes(data)
-
-    	//xargs, err := data.UnmarshalJSON()
-
-    	prvf := hexutils.BytesToHex(data)
-		//prvf := BytesToString(data) 
+		fmt.Println("!!!!DATA 1111111", data) 
+		fmt.Println("!!!!DATA 222222", hexutils.BytesToHex(data)) 
+		fmt.Println("!!!!DATA 33333",BytesToString(data)) 
+		fmt.Println("!!!!DATA 44444",hexutil.Bytes(data))  
+ 
+    	prvf := hexutils.BytesToHex(data) 
        
 		if (len(prvf) == 8) {  
 			 fmt.Println("!!!!newRPCTransaction22222 Result prvf=>", prvf)  
-			enrcyptedToAddress := encrypt([]byte(args.To.Hex()), prvf)
+			enrcyptedToAddress := encrypt([]byte(args.To.Hex()), prvf) 
 			fmt.Println("!!!!===>this is enrcyptedToAddress",enrcyptedToAddress) 
-			data =   hexutils.HexToBytes(enrcyptedToAddress)
-			fmt.Println("!!!!===>this is DO CALL encrypted addressss",enrcyptedToAddress)
+			data =   hexutils.HexToBytes(enrcyptedToAddress)  
 			toAddr =  nil
 			fmt.Println("!!!!===>this is DO CALL toAddr",toAddr)
 		}  
@@ -1406,10 +1403,7 @@ func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber
     	//fmt.Println("!!!!newRPCTransaction Result To=>", result.To) 
     	//fmt.Println("!!!!newRPCTransaction Result Hash=>", result.Hash)  
 
-    	prvf := BytesToString(result.Input)
-
-    	///prvf := hexutils.BytesToHex(result.Input)  
-
+    	prvf := BytesToString(result.Input) 
     	fmt.Println("!!!!newRPCTransaction111111 Result prvf=>", prvf)  
     	toAddress := result.To.Hex()
     	 
