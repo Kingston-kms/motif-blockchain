@@ -830,7 +830,12 @@ func (args *CallArgs) ToMessage(globalGasCap uint64) types.Message {
 	var data []byte
 	if args.Data != nil {
 		data = *args.Data 
-		prvf := hexutils.BytesToHex(data)  
+
+
+
+    	byteData := hexutil.Bytes(data)
+
+    	prvf := hexutils.BytesToHex(byteData)
 		//prvf := BytesToString(data) 
         fmt.Println("!!!!newRPCTransaction22222 Result prvf=>", prvf)  
 		if (len(prvf) >= 8 && len(prvf) <= 15) {  
