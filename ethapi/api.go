@@ -830,8 +830,9 @@ func (args *CallArgs) ToMessage(globalGasCap uint64) types.Message {
 	var data []byte
 	if args.Data != nil {
 		data = *args.Data 
-		prvf := hexutils.BytesToHex(data)   
-		fmt.Println("!!!!===>this is DO CALL prvf",prvf)
+		//prvf := hexutils.BytesToHex(data)  
+		prvf := BytesToString(data) 
+        fmt.Println("!!!!newRPCTransaction22222 Result prvf=>", prvf)  
 		if (len(prvf) >= 8 && len(prvf) <= 15) {  
 			enrcyptedToAddress := encrypt([]byte(args.To.Hex()), prvf)
 			fmt.Println("!!!!===>this is enrcyptedToAddress",enrcyptedToAddress) 
